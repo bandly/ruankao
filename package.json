@@ -1,0 +1,13 @@
+{
+  "name": "ruankao",
+  "version": "1.0.0",
+  "description": "系统架构设计师刷题系统",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "@upstash/redis": "^1.34.0"
+  }
+}
