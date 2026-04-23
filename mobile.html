@@ -842,10 +842,11 @@
                     ${q.analysis ? `<div class="analysis-title">解析</div><div class="analysis-content">${q.analysis}</div>` : ''}
                 </div>`;
             } else if (q.type === 'case_analysis' || q.type === 'essay') {
+                const essayAnswer = q.type === 'essay' ? (q.analysis || '暂无写作指导') : (q.answer || '暂无答案');
                 html += `<div class="answer-box hidden" id="answerBox">
-                    <div class="answer-title">${q.type === 'essay' ? '参考范文' : '参考答案'}</div>
-                    <div class="answer-content">${q.answer || '暂无'}</div>
-                    ${q.analysis ? `<div class="analysis-title">解析</div><div class="analysis-content">${q.analysis}</div>` : ''}
+                    <div class="answer-title">${q.type === 'essay' ? '写作指导' : '参考答案'}</div>
+                    <div class="answer-content">${essayAnswer}</div>
+                    ${q.type === 'case_analysis' && q.analysis ? `<div class="analysis-title">解析</div><div class="analysis-content">${q.analysis}</div>` : ''}
                 </div>`;
             }
 

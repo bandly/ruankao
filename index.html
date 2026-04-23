@@ -558,6 +558,7 @@
     <script>
         // 全局数据
         let questionsData = null;
+        let statsData = null;
         let currentCategory = null;
         let currentQuestions = [];
         let currentIndex = 0;
@@ -566,8 +567,44 @@
         let wrongCount = 0;
         let answeredCount = 0;
 
+        // 加载统计数据
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                statsData = await response.json();
+            } catch (error) {
+                console.log('统计数据加载失败，使用空数据');
+                statsData = {};
+            }
+        }
+
+        // 保存答题记录
+        async function saveQuestionRecord(qId, isCorrect) {
+            try {
+                const existing = statsData.questions?.[qId] || { attempts: 0, correctCount: 0, wrongCount: 0 };
+                const record = {
+                    attempts: existing.attempts + 1,
+                    correctCount: existing.correctCount + (isCorrect ? 1 : 0),
+                    wrongCount: existing.wrongCount + (isCorrect ? 0 : 1)
+                };
+
+                const response = await fetch(`/api/stats/question/${qId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(record)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    statsData = result.stats;
+                }
+            } catch (error) {
+                console.error('保存答题记录失败:', error);
+            }
+        }
+
         // 加载题目数据
         async function loadQuestions() {
+            await loadStats();
             try {
                 const response = await fetch('questions_data.json');
                 questionsData = await response.json();
@@ -650,6 +687,12 @@
 
         // 显示欢迎页面
         function showWelcome() {
+            const overall = statsData.overall || {};
+            const totalAttempts = overall.totalAttempts || 0;
+            const accuracy = overall.accuracy || 0;
+            const totalCorrect = overall.totalCorrect || 0;
+            const totalWrong = overall.totalWrong || 0;
+
             document.getElementById('questionArea').innerHTML = `
                 <div class="stats-panel">
                     <div class="stat-card">
@@ -667,6 +710,24 @@
                     <div class="stat-card">
                         <div class="stat-value">${countTotalMockQuestions()}</div>
                         <div class="stat-label">模拟题目</div>
+                    </div>
+                </div>
+                <div class="stats-panel" style="margin-top: 20px;">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <div class="stat-value" style="color: white;">${totalAttempts}</div>
+                        <div class="stat-label" style="color: white;">刷题次数</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                        <div class="stat-value" style="color: white;">${accuracy}%</div>
+                        <div class="stat-label" style="color: white;">正确率</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);">
+                        <div class="stat-value" style="color: white;">${totalCorrect}</div>
+                        <div class="stat-label" style="color: white;">正确数</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%);">
+                        <div class="stat-value" style="color: white;">${totalWrong}</div>
+                        <div class="stat-label" style="color: white;">错误数</div>
                     </div>
                 </div>
                 <div class="question-card">
@@ -887,6 +948,7 @@
 
         // 渲染论文题
         function renderEssayQuestion(q) {
+            const writingGuide = q.analysis || '暂无写作指导';
             let html = `
                 <div class="question-card">
                     <div class="question-header">
@@ -894,11 +956,11 @@
                     </div>
                     <div class="question-content">${q.content}</div>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="showEssayAnswer('${q.id}')">查看范文</button>
+                        <button class="btn btn-primary" onclick="showEssayAnswer('${q.id}')">查看写作指导</button>
                     </div>
                     <div class="answer-section hidden" id="answer-${q.id}">
-                        <div class="answer-title">参考范文</div>
-                        <div class="answer-content">${q.answer}</div>
+                        <div class="answer-title">写作指导</div>
+                        <div class="answer-content">${writingGuide}</div>
                     </div>
                 </div>
             `;
@@ -915,7 +977,7 @@
         }
 
         // 提交答案
-        function submitAnswer(qId) {
+        async function submitAnswer(qId) {
             const q = currentQuestions[currentIndex];
             const userAnswer = userAnswers[qId] || [];
             const correctAnswer = q.answer.split(' ');
@@ -940,6 +1002,9 @@
                 wrongCount++;
             }
             answeredCount++;
+
+            // 保存到服务器
+            await saveQuestionRecord(qId, allCorrect);
 
             // 显示答案
             document.getElementById(`answer-${qId}`).classList.remove('hidden');
