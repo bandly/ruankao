@@ -348,6 +348,78 @@
             font-weight: 500;
         }
 
+        /* 案例分析题样式 */
+        .case-intro {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .case-intro h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1em;
+        }
+
+        .case-intro p {
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .case-question-block {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .case-question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .case-question-num {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        .case-question-points {
+            color: #f57c00;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+
+        .case-question-content {
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .answer-item {
+            background: #fff;
+            border-left: 3px solid #667eea;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+        }
+
+        .answer-item-header {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+
+        .answer-item-content {
+            line-height: 1.6;
+            color: #333;
+        }
+
         .btn-group {
             display: flex;
             gap: 15px;
@@ -539,6 +611,90 @@
             outline: none;
             border-color: #667eea;
         }
+
+        /* 论文范本样式 */
+        .essay-card {
+            border: 2px solid #e8e8e8;
+            margin-bottom: 30px;
+        }
+
+        .essay-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px 12px 0 0;
+            flex-wrap: wrap;
+        }
+
+        .essay-number {
+            background: white;
+            color: #667eea;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: bold;
+        }
+
+        .essay-title {
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .essay-id {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .essay-section {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .essay-section:last-child {
+            border-bottom: none;
+        }
+
+        .essay-section h4 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1em;
+            display: inline-block;
+            background: #f0f0f0;
+            padding: 5px 15px;
+            border-radius: 5px;
+        }
+
+        .essay-question {
+            background: #fff3e0;
+            padding: 15px 20px;
+            border-radius: 8px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .essay-abstract {
+            background: #e3f2fd;
+            padding: 15px 20px;
+            border-radius: 8px;
+            line-height: 1.8;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .essay-content {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            line-height: 2;
+            color: #333;
+            white-space: pre-wrap;
+            max-height: 600px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -656,6 +812,79 @@
                 p = p.replace(/([A-D][选项]?选择|第一空|第二空|第三空|综上|因此|所以|答案)/g, '<span class="highlight">$1</span>');
                 return `<p>${p}</p>`;
             }).join('');
+        }
+
+        // 格式化案例分析题内容（按【问题】分段）
+        function formatCaseContent(text) {
+            if (!text) return '';
+
+            // 按【问题】分割
+            const parts = text.split(/【问题\d+[】\)]/);
+            const matches = text.match(/【问题\d+[】\)]([^【]*)/g);
+
+            if (!matches || matches.length === 0) {
+                return `<div class="case-section"><p>${text}</p></div>`;
+            }
+
+            // 提取背景描述（第一个【问题】之前的内容）
+            const introMatch = text.match(/^(.+?)(?=【问题\d+[】\)])/);
+            let html = '';
+
+            if (introMatch) {
+                html += `<div class="case-intro"><h4>案例背景</h4><p>${introMatch[1].trim()}</p></div>`;
+            }
+
+            // 处理每个问题
+            for (let i = 0; i < matches.length; i++) {
+                const questionText = matches[i];
+                const questionMatch = questionText.match(/【问题(\d+)[】\)](?:\s*[（(]\s*(\d+)\s*分\s*[）)]\s*)?\s*(.*)/);
+
+                if (questionMatch) {
+                    const qNum = questionMatch[1];
+                    const points = questionMatch[2] || '';
+                    const content = questionMatch[3].trim();
+
+                    html += `<div class="case-question-block">
+                        <div class="case-question-header">
+                            <span class="case-question-num">问题${qNum}</span>
+                            ${points ? `<span class="case-question-points">(${points}分)</span>` : ''}
+                        </div>
+                        <div class="case-question-content">${content}</div>
+                    </div>`;
+                }
+            }
+
+            return html;
+        }
+
+        // 格式化案例分析题答案（按【问题】分段）
+        function formatCaseAnswer(text) {
+            if (!text) return '';
+
+            // 按【问题】分割
+            const matches = text.match(/【问题(\d+)[】\)]([^【]*)/g);
+
+            if (!matches || matches.length === 0) {
+                return `<div class="answer-item"><p>${text}</p></div>`;
+            }
+
+            let html = '';
+            for (let i = 0; i < matches.length; i++) {
+                const answerText = matches[i];
+                const answerMatch = answerText.match(/【问题(\d+)[】\)]\s*(.*)/);
+
+                if (answerMatch) {
+                    const qNum = answerMatch[1];
+                    const content = answerMatch[2].trim();
+
+                    html += `<div class="answer-item">
+                        <div class="answer-item-header">问题${qNum}答案</div>
+                        <div class="answer-item-content">${content}</div>
+                    </div>`;
+                }
+            }
+
+            return html;
         }
 
         // 加载统计数据
@@ -781,6 +1010,71 @@
                 mockSubList.appendChild(typeItem);
             }
             mockItem.appendChild(mockSubList);
+
+            // 论文范本
+            if (questionsData.essay_samples) {
+                const essayItem = document.createElement('li');
+                essayItem.className = 'category-item';
+                const totalEssays = Object.values(questionsData.essay_samples).reduce((sum, arr) => sum + arr.length, 0);
+                essayItem.innerHTML = `论文范本 <span class="badge">${totalEssays}</span>`;
+                essayItem.onclick = () => toggleCategory('essay', essayItem);
+                list.appendChild(essayItem);
+
+                const essaySubList = document.createElement('ul');
+                essaySubList.className = 'sub-list';
+                for (const category of Object.keys(questionsData.essay_samples)) {
+                    const catItem = document.createElement('li');
+                    catItem.className = 'sub-item';
+                    catItem.innerHTML = `${category} <span class="badge">${questionsData.essay_samples[category].length}</span>`;
+                    catItem.onclick = (e) => {
+                        e.stopPropagation();
+                        selectEssayCategory(category);
+                    };
+                    essaySubList.appendChild(catItem);
+                }
+                essayItem.appendChild(essaySubList);
+            }
+        }
+
+        // 选择论文范本分类
+        function selectEssayCategory(category) {
+            currentCategory = 'essay';
+            currentChapter = category;
+            currentQuestionIndex = 0;
+
+            const essays = questionsData.essay_samples[category] || [];
+            document.getElementById('questionArea').innerHTML = '';
+
+            for (let i = 0; i < essays.length; i++) {
+                const essay = essays[i];
+                renderEssaySample(essay, i + 1);
+            }
+        }
+
+        // 渲染论文范本
+        function renderEssaySample(essay, index) {
+            const html = `
+                <div class="question-card essay-card">
+                    <div class="essay-header">
+                        <span class="essay-number">范本 ${index}</span>
+                        <span class="essay-title">${essay.title}</span>
+                        <span class="essay-id">ID: ${essay.id}</span>
+                    </div>
+                    <div class="essay-section">
+                        <h4>题目要求</h4>
+                        <div class="essay-question">${essay.question || '暂无题目描述'}</div>
+                    </div>
+                    <div class="essay-section">
+                        <h4>摘要</h4>
+                        <div class="essay-abstract">${essay.abstract || '暂无摘要'}</div>
+                    </div>
+                    <div class="essay-section">
+                        <h4>范文正文</h4>
+                        <div class="essay-content">${essay.content || '暂无内容'}</div>
+                    </div>
+                </div>
+            `;
+            document.getElementById('questionArea').innerHTML += html;
         }
 
         // 显示欢迎页面
@@ -1034,13 +1328,13 @@
                     <div class="question-header">
                         <span class="question-number">试题 ${q.number} [${q.id}] - 案例分析</span>
                     </div>
-                    <div class="question-content">${q.content}</div>
+                    <div class="question-content">${formatCaseContent(q.content)}</div>
                     <div class="btn-group">
                         <button class="btn btn-primary" onclick="showCaseAnswer('${q.id}')">查看答案</button>
                     </div>
                     <div class="answer-section hidden" id="answer-${q.id}">
                         <div class="answer-title">参考答案</div>
-                        <div class="answer-content">${q.answer}</div>
+                        <div class="answer-content">${formatCaseAnswer(q.answer)}</div>
                         ${q.analysis ? `
                             <div class="analysis-title">试题分析</div>
                             <div class="analysis-content">${formatAnalysis(q.analysis)}</div>
@@ -1194,6 +1488,23 @@
 
         // 初始化
         loadQuestions();
+
+        // 事件委托 - 处理选项点击和提交按钮点击
+        document.getElementById('questionArea').addEventListener('click', function(e) {
+            const target = e.target.closest('.option-item');
+            if (target && target.hasAttribute('data-qid')) {
+                const qId = target.getAttribute('data-qid');
+                const group = parseInt(target.getAttribute('data-group'));
+                const letter = target.getAttribute('data-letter');
+                selectOption(qId, group, letter);
+            }
+
+            const submitBtn = e.target.closest('button[data-submit]');
+            if (submitBtn) {
+                const qId = submitBtn.getAttribute('data-submit');
+                submitAnswer(qId);
+            }
+        });
     </script>
 </body>
 </html>
