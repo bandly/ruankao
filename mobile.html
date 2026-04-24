@@ -799,6 +799,7 @@
     <script>
         // 全局状态
         let data = null;
+        let statsData = null;  // 统计数据
         let currentQuestions = [];
         let currentIndex = 0;
         let userAnswers = {};
@@ -806,6 +807,62 @@
         let correctCount = 0;
         let wrongCount = 0;
         let currentQId = null;
+
+        // 加载统计数据
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/stats');
+                statsData = await response.json();
+            } catch (e) {
+                console.log('统计数据加载失败，使用本地存储');
+                // 使用 localStorage 作为后备
+                const localStats = localStorage.getItem('ruankao_stats');
+                statsData = localStats ? JSON.parse(localStats) : {};
+            }
+        }
+
+        // 保存答题记录
+        async function saveQuestionRecord(qId, isCorrect) {
+            try {
+                const existing = statsData.questions?.[qId] || { attempts: 0, correctCount: 0, wrongCount: 0 };
+                const record = {
+                    attempts: existing.attempts + 1,
+                    correctCount: existing.correctCount + (isCorrect ? 1 : 0),
+                    wrongCount: existing.wrongCount + (isCorrect ? 0 : 1)
+                };
+
+                const response = await fetch(`/api/stats/question/${qId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(record)
+                });
+                const result = await response.json();
+                if (result.success) {
+                    statsData = result.stats;
+                }
+            } catch (e) {
+                // 使用 localStorage 作为后备
+                if (!statsData.questions) statsData.questions = {};
+                const existing = statsData.questions[qId] || { attempts: 0, correctCount: 0, wrongCount: 0 };
+                statsData.questions[qId] = {
+                    attempts: existing.attempts + 1,
+                    correctCount: existing.correctCount + (isCorrect ? 1 : 0),
+                    wrongCount: existing.wrongCount + (isCorrect ? 0 : 1)
+                };
+                // 更新总体统计
+                let totalAttempts = 0, totalCorrect = 0, totalWrong = 0;
+                for (const q of Object.values(statsData.questions)) {
+                    totalAttempts += q.attempts || 0;
+                    totalCorrect += q.correctCount || 0;
+                    totalWrong += q.wrongCount || 0;
+                }
+                statsData.overall = {
+                    totalAttempts, totalCorrect, totalWrong,
+                    accuracy: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0
+                };
+                localStorage.setItem('ruankao_stats', JSON.stringify(statsData));
+            }
+        }
 
         // 格式化解析内容
         function formatAnalysis(text) {
@@ -895,6 +952,7 @@
 
         // 加载数据
         async function loadData() {
+            await loadStats();
             try {
                 const res = await fetch('questions_data.json');
                 data = await res.json();
@@ -1007,6 +1065,14 @@
             for (const type of Object.values(data.mock_exams)) {
                 mockTotal += Object.values(type).reduce((s, a) => s + a.length, 0);
             }
+
+            // 统计数据
+            const overall = statsData.overall || {};
+            const totalAttempts = overall.totalAttempts || 0;
+            const accuracy = overall.accuracy || 0;
+            const totalCorrect = overall.totalCorrect || 0;
+            const totalWrong = overall.totalWrong || 0;
+
             document.getElementById('mainContent').innerHTML = `
                 <div class="home-stats">
                     <div class="stats-grid">
@@ -1025,6 +1091,26 @@
                         <div class="stat-card">
                             <div class="stat-value">${Object.keys(data.mock_exams).length}</div>
                             <div class="stat-label">题型分类</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="home-stats" style="margin-top: 12px;">
+                    <div class="stats-grid">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="stat-value" style="color: white;">${totalAttempts}</div>
+                            <div class="stat-label" style="color: white;">刷题次数</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                            <div class="stat-value" style="color: white;">${accuracy}%</div>
+                            <div class="stat-label" style="color: white;">正确率</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);">
+                            <div class="stat-value" style="color: white;">${totalCorrect}</div>
+                            <div class="stat-label" style="color: white;">正确数</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%);">
+                            <div class="stat-value" style="color: white;">${totalWrong}</div>
+                            <div class="stat-label" style="color: white;">错误数</div>
                         </div>
                     </div>
                 </div>
@@ -1239,6 +1325,10 @@
             else wrongCount++;
 
             submittedAnswers[q.id] = true;
+
+            // 保存答题记录
+            saveQuestionRecord(q.id, allCorrect);
+
             renderQuestion();
 
             if (currentIndex === currentQuestions.length - 1) {
@@ -1281,7 +1371,43 @@
         }
 
         function showStats() {
-            alert(`已答: ${correctCount + wrongCount}题\n正确: ${correctCount}\n错误: ${wrongCount}`);
+            const overall = statsData.overall || {};
+            const totalAttempts = overall.totalAttempts || 0;
+            const accuracy = overall.accuracy || 0;
+            const totalCorrect = overall.totalCorrect || 0;
+            const totalWrong = overall.totalWrong || 0;
+
+            document.getElementById('mainContent').innerHTML = `
+                <div class="page-title">学习统计</div>
+                <div class="home-stats" style="margin: 16px;">
+                    <div class="stats-grid">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="stat-value" style="color: white;">${totalAttempts}</div>
+                            <div class="stat-label" style="color: white;">总答题次数</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
+                            <div class="stat-value" style="color: white;">${accuracy}%</div>
+                            <div class="stat-label" style="color: white;">总正确率</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #4caf50 0%, #81c784 100%);">
+                            <div class="stat-value" style="color: white;">${totalCorrect}</div>
+                            <div class="stat-label" style="color: white;">总正确数</div>
+                        </div>
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%);">
+                            <div class="stat-value" style="color: white;">${totalWrong}</div>
+                            <div class="stat-label" style="color: white;">总错误数</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="welcome-card">
+                    <div class="welcome-title">当前进度</div>
+                    <p style="color: var(--text-light);">本次答题：正确 ${correctCount} / 错误 ${wrongCount}</p>
+                    <p style="color: var(--text-light); margin-top: 8px;">正确率：${correctCount + wrongCount > 0 ? Math.round(correctCount / (correctCount + wrongCount) * 100) : 0}%</p>
+                </div>
+                <div style="text-align: center; margin: 20px;">
+                    <button class="submit-btn" onclick="showHome()">返回首页</button>
+                </div>
+            `;
         }
 
         // 初始化
