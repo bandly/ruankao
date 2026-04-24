@@ -483,6 +483,15 @@
             margin-top: 4px;
         }
 
+        .page-title {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+
         .welcome-card {
             padding: 20px;
             background: white;
@@ -593,6 +602,80 @@
             font-size: 16px;
             cursor: pointer;
         }
+
+        /* 论文范本样式 */
+        .essay-card {
+            background: white;
+            border-radius: 12px;
+            margin: 16px;
+            padding: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .essay-header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px;
+            border-radius: 12px 12px 0 0;
+        }
+
+        .essay-header-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .essay-header-id {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .essay-section {
+            padding: 16px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .essay-section:last-child {
+            border-bottom: none;
+        }
+
+        .essay-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            background: #f0f0f0;
+            padding: 4px 12px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .essay-text {
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        .essay-question {
+            background: #fff3e0;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .essay-abstract {
+            background: #e3f2fd;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .essay-content {
+            background: #f5f5f5;
+            padding: 12px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
     </style>
 </head>
 <body>
@@ -697,9 +780,59 @@
                     </div>`;
                 }
                 html += '</div>';
+
+            // 论文范本
+            if (data.essay_samples) {
+                const totalEssays = Object.values(data.essay_samples).reduce((s, a) => s + a.length, 0);
+                html += `<div class="menu-section">
+                    <div class="menu-title">论文范本 <span class="menu-count">${totalEssays}篇</span></div>`;
+
+                for (const category of Object.keys(data.essay_samples)) {
+                    const count = data.essay_samples[category].length;
+                    html += `<div class="menu-item" onclick="showEssays('${category}')">
+                        <span>${category}</span>
+                        <span class="count">${count}篇</span>
+                    </div>`;
+                }
+                html += '</div>';
             }
 
             content.innerHTML = html;
+        }
+
+        // 显示论文范本
+        function showEssays(category) {
+            closeSidebar();
+            document.getElementById('bottomNav').style.display = 'none';
+
+            const essays = data.essay_samples[category] || [];
+            let html = `<div class="page-title">${category} (${essays.length}篇范本)</div>`;
+
+            for (let i = 0; i < essays.length; i++) {
+                const essay = essays[i];
+                html += `
+                    <div class="essay-card">
+                        <div class="essay-header">
+                            <div class="essay-header-title">${essay.title}</div>
+                            <div class="essay-header-id">范本 ${i + 1} | ID: ${essay.id}</div>
+                        </div>
+                        <div class="essay-section">
+                            <div class="essay-section-title">题目要求</div>
+                            <div class="essay-text essay-question">${essay.question || '暂无题目描述'}</div>
+                        </div>
+                        <div class="essay-section">
+                            <div class="essay-section-title">摘要</div>
+                            <div class="essay-text essay-abstract">${essay.abstract || '暂无摘要'}</div>
+                        </div>
+                        <div class="essay-section">
+                            <div class="essay-section-title">范文正文</div>
+                            <div class="essay-text essay-content">${essay.content || '暂无内容'}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('mainContent').innerHTML = html;
         }
 
         // 显示首页
