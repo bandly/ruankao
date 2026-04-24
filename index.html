@@ -717,7 +717,7 @@
             const list = document.getElementById('categoryList');
             list.innerHTML = '';
 
-            // 章节练习
+            // 章节练习 - 按章节号排序
             const chapterItem = document.createElement('li');
             chapterItem.className = 'category-item';
             chapterItem.innerHTML = `章节练习 <span class="badge">${Object.keys(questionsData.chapter_practice).length}</span>`;
@@ -726,7 +726,14 @@
 
             const chapterSubList = document.createElement('ul');
             chapterSubList.className = 'sub-list';
-            for (const chapter of Object.keys(questionsData.chapter_practice)) {
+            // 提取章节号并排序
+            const chapters = Object.keys(questionsData.chapter_practice);
+            chapters.sort((a, b) => {
+                const numA = parseInt(a.match(/第(\d+)章/)?.[1] || 0);
+                const numB = parseInt(b.match(/第(\d+)章/)?.[1] || 0);
+                return numA - numB;
+            });
+            for (const chapter of chapters) {
                 const subItem = document.createElement('li');
                 subItem.className = 'sub-item';
                 subItem.innerHTML = `${chapter} <span class="badge">${questionsData.chapter_practice[chapter].length}</span>`;
@@ -978,11 +985,11 @@
                         if (isSelected && !isCorrect) optClass += ' wrong';
                     }
 
-                    // 提交后禁用点击
-                    const clickHandler = isSubmitted ? '' : `onclick="selectOption('${q.id}', ${i}, '${opt.letter}')`;
+                    // 使用 data 属性存储点击信息
+                    const dataAttrs = isSubmitted ? "" : `data-qid="${q.id}" data-group="${i}" data-letter="${opt.letter}"`;
 
                     html += `
-                        <div class="${optClass}" ${clickHandler}>
+                        <div class="${optClass}" ${dataAttrs}>
                             <span class="option-letter">${opt.letter}</span>
                             <span class="option-text">${opt.text}</span>
                         </div>
@@ -1000,7 +1007,7 @@
             const hasAnswer = isSubmitted;
             html += `
                 <div class="btn-group">
-                    ${isSubmitted ? '' : `<button class="btn btn-primary" onclick="submitAnswer('${q.id}')">提交答案</button>`}
+                    ${isSubmitted ? '' : `<button class="btn btn-primary" data-submit="${q.id}">提交答案</button>`}
                 </div>
             `;
 
