@@ -141,6 +141,13 @@
             margin-bottom: 16px;
         }
 
+        /* 题目图片 */
+        .question-image img {
+            max-width: 100%;
+            margin: 15px 0;
+            border-radius: 8px;
+        }
+
         /* 选项 */
         .options-group {
             margin-bottom: 16px;
@@ -263,6 +270,107 @@
             border-radius: 8px;
         }
 
+        .analysis-content p {
+            margin-bottom: 10px;
+            text-indent: 2em;
+        }
+
+        .analysis-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .analysis-content .highlight {
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* 案例分析题样式 */
+        .case-intro {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .case-intro h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .case-intro p {
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        .case-question-block {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .case-question-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .case-question-num {
+            background: var(--primary);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 12px;
+        }
+
+        .case-question-points {
+            color: #f57c00;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+
+        .case-question-content {
+            line-height: 1.7;
+            color: var(--text);
+        }
+
+        .answer-item {
+            background: #fff;
+            border-left: 3px solid var(--primary);
+            padding: 10px 12px;
+            margin-bottom: 12px;
+        }
+
+        .answer-item-header {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+
+        .answer-item-content {
+            line-height: 1.6;
+            color: var(--text);
+        }
+
+        /* 论文范文样式 */
+        .essay-section-title {
+            color: var(--primary);
+            font-size: 14px;
+            margin: 15px 0 8px 0;
+            padding-bottom: 4px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .essay-paragraph {
+            margin-bottom: 10px;
+            line-height: 1.7;
+            color: var(--text);
+        }
+
         /* 底部导航 */
         .bottom-nav {
             position: fixed;
@@ -286,6 +394,7 @@
             font-weight: 500;
             cursor: pointer;
             transition: all 0.15s;
+            border: none;
         }
 
         .nav-btn.prev {
@@ -307,26 +416,14 @@
             transform: scale(0.95);
         }
 
-        .action-btns {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            padding: 10px 16px;
+        .submit-btn {
+            padding: 10px 20px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 14px;
             cursor: pointer;
-        }
-
-        .action-btn.submit {
             background: var(--success);
             color: white;
-        }
-
-        .action-btn.show {
-            background: #f5f5f5;
-            color: var(--text);
+            border: none;
         }
 
         /* 侧边栏菜单 */
@@ -424,18 +521,9 @@
             background: #f5f5f5;
         }
 
-        .menu-item.active {
-            background: #f0f4ff;
-            color: var(--primary);
-        }
-
         .menu-item .count {
             font-size: 13px;
             color: var(--text-light);
-        }
-
-        .submenu {
-            padding-left: 12px;
         }
 
         .submenu-item {
@@ -483,15 +571,6 @@
             margin-top: 4px;
         }
 
-        .page-title {
-            padding: 16px;
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--text);
-            background: white;
-            border-bottom: 1px solid #eee;
-        }
-
         .welcome-card {
             padding: 20px;
             background: white;
@@ -510,17 +589,7 @@
             color: var(--text-light);
             line-height: 1.8;
             font-size: 14px;
-        }
-
-        .welcome-list li {
-            margin-bottom: 8px;
-        }
-
-        /* 案例分析题 */
-        .case-content {
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--text);
+            padding-left: 20px;
         }
 
         /* 加载状态 */
@@ -544,7 +613,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* 结果统计弹窗 */
+        /* 结果弹窗 */
         .result-modal {
             position: fixed;
             top: 0;
@@ -601,14 +670,23 @@
             color: white;
             font-size: 16px;
             cursor: pointer;
+            border: none;
         }
 
         /* 论文范本样式 */
+        .page-title {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+
         .essay-card {
             background: white;
             border-radius: 12px;
             margin: 16px;
-            padding: 0;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
@@ -694,10 +772,7 @@
     <!-- 底部导航 -->
     <nav class="bottom-nav" id="bottomNav" style="display: none;">
         <button class="nav-btn prev" onclick="prevQuestion()">上一题</button>
-        <div class="action-btns">
-            <button class="action-btn submit" onclick="submitAnswer()">提交</button>
-            <button class="action-btn show" onclick="showAnswer()">答案</button>
-        </div>
+        <div id="actionBtns"></div>
         <button class="nav-btn next" onclick="nextQuestion()">下一题</button>
     </nav>
 
@@ -708,9 +783,7 @@
             <h2>系统架构设计师</h2>
             <p>2025上半年题库</p>
         </div>
-        <div class="sidebar-content" id="sidebarContent">
-            <!-- 动态生成 -->
-        </div>
+        <div class="sidebar-content" id="sidebarContent"></div>
     </aside>
 
     <!-- 结果弹窗 -->
@@ -729,9 +802,96 @@
         let currentQuestions = [];
         let currentIndex = 0;
         let userAnswers = {};
+        let submittedAnswers = {};
         let correctCount = 0;
         let wrongCount = 0;
         let currentQId = null;
+
+        // 格式化解析内容
+        function formatAnalysis(text) {
+            if (!text) return '';
+            let paragraphs = text.split(/[。！？]/);
+            let html = '';
+            let count = 0;
+            for (let s of paragraphs) {
+                if (s.trim()) {
+                    s = s.replace(/([A-D][选项]?选择|第一空|第二空|第三空|综上|因此|所以|答案)/g, '<span class="highlight">$1</span>');
+                    html += `<p>${s}。</p>`;
+                    count++;
+                    if (count >= 3) {
+                        count = 0;
+                        html += '<br>';
+                    }
+                }
+            }
+            return html;
+        }
+
+        // 格式化案例分析题内容
+        function formatCaseContent(text) {
+            if (!text) return '';
+            const matches = text.match(/【问题(\d+)[】\)](?:\s*[（(]\s*(\d+)\s*分\s*[）)]\s*)?\s*([^【]*)/g);
+            const introMatch = text.match(/^(.+?)(?=【问题\d+[】\)])/);
+            let html = '';
+
+            if (introMatch) {
+                html += `<div class="case-intro"><h4>案例背景</h4><p>${introMatch[1].trim()}</p></div>`;
+            }
+
+            if (matches) {
+                for (let m of matches) {
+                    const parts = m.match(/【问题(\d+)[】\)](?:\s*[（(]\s*(\d+)\s*分\s*[）)]\s*)?\s*(.*)/);
+                    if (parts) {
+                        html += `<div class="case-question-block">
+                            <div class="case-question-header">
+                                <span class="case-question-num">问题${parts[1]}</span>
+                                ${parts[2] ? `<span class="case-question-points">(${parts[2]}分)</span>` : ''}
+                            </div>
+                            <div class="case-question-content">${parts[3].trim()}</div>
+                        </div>`;
+                    }
+                }
+            }
+            return html;
+        }
+
+        // 格式化案例分析题答案
+        function formatCaseAnswer(text) {
+            if (!text) return '';
+            const matches = text.match(/【问题(\d+)[】\)]\s*([^【]*)/g);
+            if (!matches) return `<div class="answer-item"><p>${text}</p></div>`;
+
+            let html = '';
+            for (let m of matches) {
+                const parts = m.match(/【问题(\d+)[】\)]\s*(.*)/);
+                if (parts) {
+                    html += `<div class="answer-item">
+                        <div class="answer-item-header">问题${parts[1]}答案</div>
+                        <div class="answer-item-content">${parts[2].trim()}</div>
+                    </div>`;
+                }
+            }
+            return html;
+        }
+
+        // 格式化范文
+        function formatEssaySample(text) {
+            if (!text) return '';
+            const parts = text.split(/\n\n/);
+            let html = '';
+            for (let part of parts) {
+                if (!part.trim()) continue;
+                const firstLine = part.split('\n')[0].trim();
+                if (/^[一二三四五六七八九十]+[、．.]/.test(firstLine)) {
+                    html += `<h4 class="essay-section-title">${firstLine}</h4>`;
+                    const rest = part.split('\n').slice(1).join('<br>');
+                    if (rest) html += `<p class="essay-paragraph">${rest}</p>`;
+                } else {
+                    html += `<p class="essay-paragraph">${part.replace(/\n/g, '<br>')}</p>`;
+                }
+            }
+            return html;
+        }
 
         // 加载数据
         async function loadData() {
@@ -749,29 +909,33 @@
             }
         }
 
-        // 渲染侧边栏
+        // 渲染侧边栏（章节排序）
         function renderSidebar() {
             const content = document.getElementById('sidebarContent');
-
-            // 章节练习
             let html = `<div class="menu-section">
                 <div class="menu-title">章节练习 <span class="menu-count">${Object.keys(data.chapter_practice).length}</span></div>`;
 
-            for (const chapter of Object.keys(data.chapter_practice)) {
+            // 章节排序
+            const chapters = Object.keys(data.chapter_practice);
+            chapters.sort((a, b) => {
+                const numA = parseInt(a.match(/第(\d+)章/)?.[1] || 0);
+                const numB = parseInt(b.match(/第(\d+)章/)?.[1] || 0);
+                return numA - numB;
+            });
+
+            for (const chapter of chapters) {
                 const count = data.chapter_practice[chapter].length;
                 html += `<div class="menu-item" onclick="startChapter('${chapter}')">
-                    <span>${chapter.replace('第', '第').replace('章', '章')}</span>
+                    <span>${chapter}</span>
                     <span class="count">${count}题</span>
                 </div>`;
             }
-
             html += '</div>';
 
             // 模拟题
             for (const examType of Object.keys(data.mock_exams)) {
                 html += `<div class="menu-section">
                     <div class="menu-title">${examType} <span class="menu-count">${Object.keys(data.mock_exams[examType]).length}套</span></div>`;
-
                 for (const examName of Object.keys(data.mock_exams[examType])) {
                     const count = data.mock_exams[examType][examName].length;
                     const shortName = examName.replace('2025年上半年系统架构设计师考试模拟试卷（', '').replace('）', '');
@@ -780,13 +944,13 @@
                     </div>`;
                 }
                 html += '</div>';
+            }
 
             // 论文范本
             if (data.essay_samples) {
                 const totalEssays = Object.values(data.essay_samples).reduce((s, a) => s + a.length, 0);
                 html += `<div class="menu-section">
                     <div class="menu-title">论文范本 <span class="menu-count">${totalEssays}篇</span></div>`;
-
                 for (const category of Object.keys(data.essay_samples)) {
                     const count = data.essay_samples[category].length;
                     html += `<div class="menu-item" onclick="showEssays('${category}')">
@@ -838,13 +1002,11 @@
         // 显示首页
         function showHome() {
             document.getElementById('bottomNav').style.display = 'none';
-
             const chapterTotal = Object.values(data.chapter_practice).reduce((s, a) => s + a.length, 0);
             let mockTotal = 0;
             for (const type of Object.values(data.mock_exams)) {
                 mockTotal += Object.values(type).reduce((s, a) => s + a.length, 0);
             }
-
             document.getElementById('mainContent').innerHTML = `
                 <div class="home-stats">
                     <div class="stats-grid">
@@ -869,10 +1031,10 @@
                 <div class="welcome-card">
                     <div class="welcome-title">欢迎使用刷题系统</div>
                     <ul class="welcome-list">
-                        <li>• 点击左上角 ☰ 打开题库目录</li>
-                        <li>• 选择章节或模拟试卷开始刷题</li>
-                        <li>• 点击选项选择答案，提交查看结果</li>
-                        <li>• 底部按钮切换题目</li>
+                        <li>点击左上角 ☰ 打开题库目录</li>
+                        <li>选择章节或模拟试卷开始刷题</li>
+                        <li>点击选项选择答案，提交查看结果</li>
+                        <li>底部按钮切换题目</li>
                     </ul>
                 </div>
             `;
@@ -884,6 +1046,7 @@
             currentQuestions = data.chapter_practice[chapter];
             currentIndex = 0;
             userAnswers = {};
+            submittedAnswers = {};
             correctCount = 0;
             wrongCount = 0;
             renderQuestion();
@@ -895,6 +1058,7 @@
             currentQuestions = data.mock_exams[examType][examName];
             currentIndex = 0;
             userAnswers = {};
+            submittedAnswers = {};
             correctCount = 0;
             wrongCount = 0;
             renderQuestion();
@@ -903,7 +1067,6 @@
         // 渲染题目
         function renderQuestion() {
             document.getElementById('bottomNav').style.display = 'flex';
-
             if (currentQuestions.length === 0) {
                 document.getElementById('mainContent').innerHTML = '<div class="welcome-card"><p>暂无题目</p></div>';
                 return;
@@ -911,8 +1074,8 @@
 
             const q = currentQuestions[currentIndex];
             currentQId = q.id;
+            const isSubmitted = submittedAnswers[q.id];
 
-            // 进度条
             let html = `
                 <div class="progress-bar">
                     <span class="progress-text">${currentIndex + 1}/${currentQuestions.length}</span>
@@ -921,91 +1084,143 @@
                     </div>
                     <span class="progress-text">✓${correctCount} ✗${wrongCount}</span>
                 </div>
+                <div class="question-card">
+                    <div class="question-header">
+                        <span class="question-num">第${q.number}题 [${q.id}]</span>
+                        ${q.knowledge_point ? `<span class="tag knowledge">${q.knowledge_point.split('>')[0]}</span>` : ''}
+                        ${q.pass_rate ? `<span class="tag">通过率${q.pass_rate}</span>` : ''}
+                    </div>
             `;
 
-            // 题目卡片
-            html += '<div class="question-card">';
-
-            // 题目头部
-            html += `<div class="question-header">
-                <span class="question-num">第${q.number}题</span>
-                ${q.knowledge_point ? `<span class="tag knowledge">${q.knowledge_point.split('>')[0]}</span>` : ''}
-                ${q.pass_rate ? `<span class="tag">通过率${q.pass_rate}</span>` : ''}
-            </div>`;
-
-            // 题目内容
-            html += `<div class="question-content">${q.content}</div>`;
-
-            // 选项
+            // 根据题型渲染
             if (q.type === 'choice' || q.type === 'multi_choice') {
-                const isMulti = q.type === 'multi_choice' && q.options.length > 1;
-                const userAns = userAnswers[q.id] || [];
-                const correctAns = q.answer.split(' ');
-                const hasSubmitted = userAns.length > 0 && userAns.some(a => a);
-
-                for (let i = 0; i < q.options.length; i++) {
-                    if (isMulti) {
-                        html += `<div class="options-label">第${i + 1}空</div>`;
-                    }
-
-                    html += '<div class="options-group">';
-                    for (const opt of q.options[i]) {
-                        const selected = userAns[i] === opt.letter;
-                        const isCorrect = correctAns[i] === opt.letter;
-
-                        let cls = 'option-item';
-                        if (hasSubmitted) {
-                            if (isCorrect) cls += ' correct';
-                            if (selected && !isCorrect) cls += ' wrong';
-                        } else if (selected) {
-                            cls += ' selected';
-                        }
-
-                        html += `<div class="${cls}" onclick="selectOpt(${i}, '${opt.letter}')">
-                            <span class="option-letter">${opt.letter}</span>
-                            <span class="option-text">${opt.text}</span>
-                        </div>`;
-                    }
-                    html += '</div>';
-                }
-
-                // 答案区域
-                html += `<div class="answer-box ${hasSubmitted ? '' : 'hidden'}" id="answerBox">
-                    <div class="answer-title">正确答案: ${q.answer}</div>
-                    ${q.analysis ? `<div class="analysis-title">解析</div><div class="analysis-content">${q.analysis}</div>` : ''}
-                </div>`;
-            } else if (q.type === 'case_analysis' || q.type === 'essay') {
-                const essayAnswer = q.type === 'essay' ? (q.analysis || '暂无写作指导') : (q.answer || '暂无答案');
-                html += `<div class="answer-box hidden" id="answerBox">
-                    <div class="answer-title">${q.type === 'essay' ? '写作指导' : '参考答案'}</div>
-                    <div class="answer-content">${essayAnswer}</div>
-                    ${q.type === 'case_analysis' && q.analysis ? `<div class="analysis-title">解析</div><div class="analysis-content">${q.analysis}</div>` : ''}
-                </div>`;
+                html += renderChoiceQuestion(q, isSubmitted);
+            } else if (q.type === 'case_analysis') {
+                html += renderCaseAnalysisQuestion(q);
+            } else if (q.type === 'essay') {
+                html += renderEssayQuestion(q);
             }
 
             html += '</div>';
-
             document.getElementById('mainContent').innerHTML = html;
-
-            // 更新导航按钮状态
             document.querySelector('.nav-btn.prev').disabled = currentIndex === 0;
             document.querySelector('.nav-btn.next').disabled = currentIndex === currentQuestions.length - 1;
         }
 
-        // 选择选项
-        function selectOpt(groupIdx, letter) {
-            if (!userAnswers[currentQId]) {
-                userAnswers[currentQId] = [];
+        // 渲染选择题
+        function renderChoiceQuestion(q, isSubmitted) {
+            const isMulti = q.type === 'multi_choice' && q.options.length > 1;
+            const userAns = userAnswers[q.id] || [];
+            const correctAns = q.answer.split(' ');
+            let html = '';
+
+            // 图片
+            if (q.image) {
+                html += `<div class="question-image"><img src="${q.image}" alt="题目图片"></div>`;
             }
-            userAnswers[currentQId][groupIdx] = letter;
-            renderQuestion();
+
+            html += `<div class="question-content">${q.content}</div>`;
+
+            for (let i = 0; i < q.options.length; i++) {
+                if (isMulti) html += `<div class="options-label">第${i + 1}空</div>`;
+                html += '<div class="options-group">';
+                for (const opt of q.options[i]) {
+                    const selected = userAns[i] === opt.letter;
+                    const isCorrect = correctAns[i] === opt.letter;
+                    let cls = 'option-item';
+                    if (isSubmitted) {
+                        if (isCorrect) cls += ' correct';
+                        if (selected && !isCorrect) cls += ' wrong';
+                    } else if (selected) {
+                        cls += ' selected';
+                    }
+                    const dataAttrs = isSubmitted ? '' : `data-group="${i}" data-letter="${opt.letter}"`;
+                    html += `<div class="${cls}" ${dataAttrs}>
+                        <span class="option-letter">${opt.letter}</span>
+                        <span class="option-text">${opt.text}</span>
+                    </div>`;
+                }
+                html += '</div>';
+            }
+
+            // 提交按钮
+            html += `<div style="text-align: center; margin-top: 15px;">`;
+            if (!isSubmitted) {
+                html += `<button class="submit-btn" data-submit>提交答案</button>`;
+            }
+            html += `</div>`;
+
+            // 答案区域
+            html += `<div class="answer-box ${isSubmitted ? '' : 'hidden'}">
+                <div class="answer-title">正确答案: ${q.answer}</div>
+                ${q.analysis ? `<div class="analysis-title">试题解析</div><div class="analysis-content">${formatAnalysis(q.analysis)}</div>` : ''}
+            </div>`;
+
+            return html;
         }
+
+        // 渲染案例分析题
+        function renderCaseAnalysisQuestion(q) {
+            let html = `<div class="question-content">${formatCaseContent(q.content)}</div>`;
+
+            // 图片
+            if (q.images && q.images.length > 0) {
+                html += `<div class="question-image">${q.images.map(img => `<img src="${img}" alt="题目图片">`).join('')}</div>`;
+            }
+
+            html += `<div style="text-align: center; margin-top: 15px;">
+                <button class="submit-btn" onclick="document.getElementById('answerBox').classList.remove('hidden')">查看答案</button>
+            </div>`;
+
+            html += `<div class="answer-box hidden" id="answerBox">
+                <div class="answer-title">参考答案</div>
+                <div class="answer-content">${formatCaseAnswer(q.answer)}</div>
+                ${q.answer_images && q.answer_images.length > 0 ?
+                    `<div class="question-image">${q.answer_images.map(img => `<img src="${img}" alt="答案图片">`).join('')}</div>` : ''}
+                ${q.analysis ? `<div class="analysis-title">试题分析</div><div class="analysis-content">${formatAnalysis(q.analysis)}</div>` : ''}
+            </div>`;
+            return html;
+        }
+
+        // 渲染论文题
+        function renderEssayQuestion(q) {
+            const essaySample = q.essay_sample || '暂无范文';
+            let html = `<div class="question-content">${q.content}</div>`;
+
+            html += `<div style="text-align: center; margin-top: 15px;">
+                <button class="submit-btn" onclick="document.getElementById('answerBox').classList.remove('hidden')">查看范文</button>
+            </div>`;
+
+            html += `<div class="answer-box hidden" id="answerBox">
+                <div class="answer-title">范文</div>
+                <div class="analysis-content">${formatEssaySample(essaySample)}</div>
+                ${q.images && q.images.length > 0 ?
+                    `<div class="question-image">${q.images.map(img => `<img src="${img}" alt="范文图片">`).join('')}</div>` : ''}
+            </div>`;
+            return html;
+        }
+
+        // 选择选项（事件委托）
+        document.getElementById('mainContent').addEventListener('click', function(e) {
+            const opt = e.target.closest('.option-item[data-letter]');
+            if (opt) {
+                const group = parseInt(opt.getAttribute('data-group'));
+                const letter = opt.getAttribute('data-letter');
+                if (!userAnswers[currentQId]) userAnswers[currentQId] = [];
+                userAnswers[currentQId][group] = letter;
+                renderQuestion();
+            }
+
+            const submitBtn = e.target.closest('[data-submit]');
+            if (submitBtn) {
+                submitAnswer();
+            }
+        });
 
         // 提交答案
         function submitAnswer() {
             const q = currentQuestions[currentIndex];
             const userAns = userAnswers[q.id] || [];
-
             if (!userAns.some(a => a)) {
                 alert('请先选择答案');
                 return;
@@ -1020,16 +1235,12 @@
                 }
             }
 
-            if (allCorrect) {
-                correctCount++;
-            } else {
-                wrongCount++;
-            }
+            if (allCorrect) correctCount++;
+            else wrongCount++;
 
-            document.getElementById('answerBox').classList.remove('hidden');
+            submittedAnswers[q.id] = true;
             renderQuestion();
 
-            // 如果是最后一题，显示结果
             if (currentIndex === currentQuestions.length - 1) {
                 const total = correctCount + wrongCount;
                 const score = Math.round(correctCount / total * 100);
@@ -1039,12 +1250,7 @@
             }
         }
 
-        // 显示答案
-        function showAnswer() {
-            document.getElementById('answerBox').classList.remove('hidden');
-        }
-
-        // 上一题
+        // 导航
         function prevQuestion() {
             if (currentIndex > 0) {
                 currentIndex--;
@@ -1052,7 +1258,6 @@
             }
         }
 
-        // 下一题
         function nextQuestion() {
             if (currentIndex < currentQuestions.length - 1) {
                 currentIndex++;
@@ -1060,7 +1265,7 @@
             }
         }
 
-        // 打开/关闭侧边栏
+        // 侧边栏
         function toggleSidebar() {
             document.getElementById('sidebarOverlay').classList.add('show');
             document.getElementById('sidebar').classList.add('show');
@@ -1071,12 +1276,10 @@
             document.getElementById('sidebar').classList.remove('show');
         }
 
-        // 关闭结果弹窗
         function closeResult() {
             document.getElementById('resultModal').classList.remove('show');
         }
 
-        // 显示统计
         function showStats() {
             alert(`已答: ${correctCount + wrongCount}题\n正确: ${correctCount}\n错误: ${wrongCount}`);
         }

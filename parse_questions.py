@@ -159,6 +159,7 @@ def parse_case_analysis_file(filepath):
             'id': q_id,
             'type': 'case_analysis',
             'content': '',
+            'images': [],  # 图片URL数组（支持多图片）
             'sub_questions': [],
             'answer': '',
             'analysis': ''
@@ -168,15 +169,23 @@ def parse_case_analysis_file(filepath):
         content_parts = []
         p_matches = re.findall(r'<p>(.*?)</p>', block, re.DOTALL)
         for p_content in p_matches:
+            # 提取图片URL
+            img_matches = re.findall(r'<img[^>]+src="([^"]+)"', p_content)
+            for img_url in img_matches:
+                question['images'].append(img_url)
             cleaned = clean_html(p_content)
             if cleaned and not cleaned.startswith('试题'):
                 content_parts.append(cleaned)
         question['content'] = '\n\n'.join(content_parts)
 
-        # 提取答案
+        # 提取答案（可能也有图片）
         answer_match = re.search(r'<div>答案</div>(.*?)(?:<div>试题分析|<br><br><div>试题)', block, re.DOTALL)
         if answer_match:
-            question['answer'] = clean_html(answer_match.group(1))
+            answer_block = answer_match.group(1)
+            # 提取答案中的图片
+            answer_img_matches = re.findall(r'<img[^>]+src="([^"]+)"', answer_block)
+            question['answer_images'] = answer_img_matches
+            question['answer'] = clean_html(answer_block)
 
         # 提取试题分析
         analysis_match = re.search(r'<div>试题分析</div>(.*?)(?:<br><br><div>试题\d|$)', block, re.DOTALL)
@@ -210,6 +219,8 @@ def parse_essay_file(filepath):
             'id': q_id,
             'type': 'essay',
             'content': '',
+            'essay_sample': '',  # 范文内容
+            'images': [],  # 范文中的图片
             'answer': '',
             'analysis': ''
         }
@@ -227,13 +238,23 @@ def parse_essay_file(filepath):
         answer_match = re.search(r'<div>答案</div>(.*?)(?:<div>试题分析|<br><br>)', block, re.DOTALL)
         if answer_match:
             ans = clean_html(answer_match.group(1))
-            question['answer'] = ans if ans else '本题为论文写作题，请参考试题分析中的写作要点。'
+            question['answer'] = ans if ans else '本题为论文写作题，请参考范文。'
 
-        # 提取试题分析（论文题的分析才是有价值的内容）
-        # 使用更精确的正则，捕获直到下一题或结束
+        # 提取范文（论文题的试题分析实际是范文内容）
         analysis_match = re.search(r'<div>试题分析</div>(.*?)(?:<br><br><div>试题\d|$)', block, re.DOTALL)
         if analysis_match:
-            question['analysis'] = clean_html(analysis_match.group(1))
+            analysis_block = analysis_match.group(1)
+            # 提取范文中的图片
+            img_matches = re.findall(r'<img[^>]+src="([^"]+)"', analysis_block)
+            question['images'] = img_matches
+            # 提取范文文本，保留段落结构
+            essay_parts = []
+            p_matches = re.findall(r'<p>(.*?)</p>', analysis_block, re.DOTALL)
+            for p_content in p_matches:
+                cleaned = clean_html(p_content)
+                if cleaned:
+                    essay_parts.append(cleaned)
+            question['essay_sample'] = '\n\n'.join(essay_parts)
 
         questions.append(question)
 
@@ -300,6 +321,15 @@ if __name__ == '__main__':
     print("开始解析题目...")
     data = scan_directory(base_path)
 
+    # 保留已有的 essay_samples 数据
+    output_path = '/Users/bandly/dev/ruankao/questions_data.json'
+    if os.path.exists(output_path):
+        with open(output_path, 'r', encoding='utf-8') as f:
+            existing_data = json.load(f)
+            if 'essay_samples' in existing_data:
+                data['essay_samples'] = existing_data['essay_samples']
+                print(f"保留已有的论文范本数据: {len(data['essay_samples'])}个分类")
+
     # 统计题目数量
     total_chapter = sum(len(q) for q in data['chapter_practice'].values())
     total_mock = 0
@@ -310,7 +340,6 @@ if __name__ == '__main__':
     print(f"模拟题题目总数: {total_mock}")
 
     # 保存为JSON
-    output_path = '/Users/bandly/dev/ruankao/questions_data.json'
     with open(output_path, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
