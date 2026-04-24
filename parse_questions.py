@@ -34,6 +34,7 @@ def parse_html_file(filepath):
             'id': q_id,
             'type': 'choice',  # 默认为选择题
             'content': '',
+            'image': '',  # 图片URL
             'options': [],
             'answer': '',
             'analysis': '',
@@ -45,6 +46,11 @@ def parse_html_file(filepath):
         content_match = re.search(r'</div>\s*<p>(.*?)</p>', block, re.DOTALL)
         if content_match:
             question['content'] = clean_html(content_match.group(1))
+
+        # 提取图片URL
+        img_match = re.search(r'<img[^>]+src="([^"]+)"', block)
+        if img_match:
+            question['image'] = img_match.group(1)
 
         # 提取选项（可能有多个选项组）
         options_blocks = re.findall(r'<div>\s*(A\..*?<br>.*?(?:<br>|</div>))', block, re.DOTALL)
