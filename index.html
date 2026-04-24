@@ -563,6 +563,7 @@
         let currentQuestions = [];
         let currentIndex = 0;
         let userAnswers = {};
+        let submittedAnswers = {};  // 记录已提交的题目
         let correctCount = 0;
         let wrongCount = 0;
         let answeredCount = 0;
@@ -764,6 +765,7 @@
             currentQuestions = questionsData.chapter_practice[chapter];
             currentIndex = 0;
             userAnswers = {};
+            submittedAnswers = {};
             correctCount = 0;
             wrongCount = 0;
             answeredCount = 0;
@@ -781,6 +783,7 @@
             currentQuestions = allQuestions;
             currentIndex = 0;
             userAnswers = {};
+            submittedAnswers = {};
             correctCount = 0;
             wrongCount = 0;
             answeredCount = 0;
@@ -793,6 +796,7 @@
             currentQuestions = questionsData.mock_exams[examType][examName];
             currentIndex = 0;
             userAnswers = {};
+            submittedAnswers = {};
             correctCount = 0;
             wrongCount = 0;
             answeredCount = 0;
@@ -850,6 +854,7 @@
         function renderChoiceQuestion(q) {
             const isMulti = q.type === 'multi_choice';
             const userAnswer = userAnswers[q.id] || [];
+            const isSubmitted = submittedAnswers[q.id];  // 是否已提交
 
             let html = `
                 <div class="question-card">
@@ -873,17 +878,20 @@
                 for (const opt of q.options[i]) {
                     const isSelected = userAnswer[i] === opt.letter;
                     const isCorrect = q.answer.split(' ')[i] === opt.letter;
-                    const showResult = userAnswer.length > 0;
 
                     let optClass = 'option-item';
                     if (isSelected) optClass += ' selected';
-                    if (showResult) {
+                    // 只有提交后才显示正确/错误样式
+                    if (isSubmitted) {
                         if (isCorrect) optClass += ' correct';
                         if (isSelected && !isCorrect) optClass += ' wrong';
                     }
 
+                    // 提交后禁用点击
+                    const clickHandler = isSubmitted ? '' : `onclick="selectOption('${q.id}', ${i}, '${opt.letter}')`;
+
                     html += `
-                        <div class="${optClass}" onclick="selectOption('${q.id}', ${i}, '${opt.letter}')">
+                        <div class="${optClass}" ${clickHandler}>
                             <span class="option-letter">${opt.letter}</span>
                             <span class="option-text">${opt.text}</span>
                         </div>
@@ -898,15 +906,14 @@
             html += '</div>';
 
             // 查看答案按钮
-            const hasAnswer = userAnswer.length > 0;
+            const hasAnswer = isSubmitted;
             html += `
                 <div class="btn-group">
-                    <button class="btn btn-primary" onclick="submitAnswer('${q.id}')">提交答案</button>
-                    <button class="btn btn-secondary" onclick="showAnswer('${q.id}')">查看答案</button>
+                    ${isSubmitted ? '' : `<button class="btn btn-primary" onclick="submitAnswer('${q.id}')">提交答案</button>`}
                 </div>
             `;
 
-            // 答案和解析
+            // 答案和解析（只有提交后显示）
             html += `
                 <div class="answer-section ${hasAnswer ? '' : 'hidden'}" id="answer-${q.id}">
                     <div class="answer-title">正确答案</div>
@@ -1003,10 +1010,13 @@
             }
             answeredCount++;
 
+            // 标记已提交
+            submittedAnswers[qId] = true;
+
             // 保存到服务器
             await saveQuestionRecord(qId, allCorrect);
 
-            // 显示答案
+            // 显示答案和解析
             document.getElementById(`answer-${qId}`).classList.remove('hidden');
             renderQuestion();
         }
@@ -1073,6 +1083,7 @@
                 currentQuestions = results;
                 currentIndex = 0;
                 userAnswers = {};
+                submittedAnswers = {};
                 renderQuestion();
             } else {
                 document.getElementById('questionArea').innerHTML = `
