@@ -334,6 +334,20 @@
             border-radius: 8px;
         }
 
+        .analysis-content p {
+            margin-bottom: 12px;
+            text-indent: 2em;
+        }
+
+        .analysis-content p:last-child {
+            margin-bottom: 0;
+        }
+
+        .analysis-content .highlight {
+            color: #667eea;
+            font-weight: 500;
+        }
+
         .btn-group {
             display: flex;
             gap: 15px;
@@ -567,6 +581,82 @@
         let correctCount = 0;
         let wrongCount = 0;
         let answeredCount = 0;
+
+        // 格式化解析内容，使其分段显示
+        function formatAnalysis(text) {
+            if (!text) return '';
+
+            // 按关键句分段
+            let paragraphs = [];
+
+            // 匹配模式：选项说明、空说明、总结句等
+            const patterns = [
+                /[一二三四五六七八九十]+[、\.]?\s*[选项空题]/g,  // 第一空、第二空等
+                /[A-D][选项]/g,  // A选项、B选项等
+                /综上[，,。]/g,  // 综上，
+                /因此[，,。]/g,  // 因此，
+                /所以[，,。]/g,  // 所以，
+                /答案[是为]/g,   // 答案是、答案为
+            ];
+
+            // 找到所有分段点
+            let breaks = [];
+            for (const pattern of patterns) {
+                let match;
+                while ((match = pattern.exec(text)) !== null) {
+                    if (match.index > 0) {
+                        breaks.push(match.index);
+                    }
+                }
+            }
+
+            // 排序分段点
+            breaks.sort((a, b) => a - b);
+
+            // 如果没有分段点，尝试按句号分段（每2-3个句号一段）
+            if (breaks.length === 0) {
+                let sentences = text.split(/[。！？]/);
+                let currentPara = '';
+                let sentenceCount = 0;
+                for (let s of sentences) {
+                    if (s.trim()) {
+                        currentPara += s + '。';
+                        sentenceCount++;
+                        // 每2-3个句子一段，或者遇到明显的关键词
+                        if (sentenceCount >= 2 ||
+                            /[综上因此所以答案选择]/.test(s)) {
+                            paragraphs.push(currentPara.trim());
+                            currentPara = '';
+                            sentenceCount = 0;
+                        }
+                    }
+                }
+                if (currentPara.trim()) {
+                    paragraphs.push(currentPara.trim());
+                }
+            } else {
+                // 按分段点切分
+                breaks.unshift(0);
+                breaks.push(text.length);
+                for (let i = 0; i < breaks.length - 1; i++) {
+                    let para = text.substring(breaks[i], breaks[i + 1]).trim();
+                    if (para) {
+                        paragraphs.push(para);
+                    }
+                }
+            }
+
+            // 转换为HTML
+            if (paragraphs.length === 0) {
+                return `<p>${text}</p>`;
+            }
+
+            return paragraphs.map(p => {
+                // 高亮关键词
+                p = p.replace(/([A-D][选项]?选择|第一空|第二空|第三空|综上|因此|所以|答案)/g, '<span class="highlight">$1</span>');
+                return `<p>${p}</p>`;
+            }).join('');
+        }
 
         // 加载统计数据
         async function loadStats() {
@@ -920,7 +1010,7 @@
                     <div class="answer-content">${q.answer}</div>
                     ${q.analysis ? `
                         <div class="analysis-title">试题解析</div>
-                        <div class="analysis-content">${q.analysis}</div>
+                        <div class="analysis-content">${formatAnalysis(q.analysis)}</div>
                     ` : ''}
                 </div>
             `;
@@ -945,7 +1035,7 @@
                         <div class="answer-content">${q.answer}</div>
                         ${q.analysis ? `
                             <div class="analysis-title">试题分析</div>
-                            <div class="analysis-content">${q.analysis}</div>
+                            <div class="analysis-content">${formatAnalysis(q.analysis)}</div>
                         ` : ''}
                     </div>
                 </div>
@@ -967,7 +1057,7 @@
                     </div>
                     <div class="answer-section hidden" id="answer-${q.id}">
                         <div class="answer-title">写作指导</div>
-                        <div class="answer-content">${writingGuide}</div>
+                        <div class="analysis-content">${formatAnalysis(writingGuide)}</div>
                     </div>
                 </div>
             `;
