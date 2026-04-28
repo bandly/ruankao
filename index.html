@@ -39,6 +39,25 @@
             opacity: 0.9;
         }
 
+        header .nav-links {
+            margin-top: 15px;
+        }
+
+        header .nav-link {
+            display: inline-block;
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            margin: 0 10px;
+            transition: all 0.3s;
+        }
+
+        header .nav-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 250px 1fr;
@@ -420,6 +439,38 @@
             color: #333;
         }
 
+        /* 论文范文样式 */
+        .essay-content {
+            padding: 15px;
+            background: #fff;
+        }
+
+        .essay-section-title {
+            color: #667eea;
+            font-size: 1.1em;
+            margin: 20px 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .essay-section-content {
+            line-height: 1.8;
+            color: #333;
+            padding: 10px 0;
+        }
+
+        .essay-paragraph {
+            margin-bottom: 12px;
+            line-height: 1.8;
+            color: #333;
+            text-indent: 0;
+        }
+
+        .essay-images {
+            margin-top: 15px;
+            text-align: center;
+        }
+
         .btn-group {
             display: flex;
             gap: 15px;
@@ -702,6 +753,10 @@
         <header>
             <h1>系统架构设计师考试刷题系统</h1>
             <p>2025年上半年 | 希塞题库</p>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">刷题练习</a>
+                <a href="essay.html" class="nav-link">论文评审</a>
+            </div>
         </header>
 
         <div class="main-content">
@@ -881,6 +936,39 @@
                         <div class="answer-item-header">问题${qNum}答案</div>
                         <div class="answer-item-content">${content}</div>
                     </div>`;
+                }
+            }
+
+            return html;
+        }
+
+        // 格式化范文内容（按章节标题分段）
+        function formatEssaySample(text) {
+            if (!text) return '';
+
+            // 按章节标题分段（如：一、二、三、或 1. 2. 3.）
+            const parts = text.split(/\n\n/);
+            let html = '';
+
+            for (const part of parts) {
+                if (!part.trim()) continue;
+
+                // 检查是否是标题行（以一、二、三、或数字开头）
+                const lines = part.split('\n');
+                const firstLine = lines[0].trim();
+
+                if (/^[一二三四五六七八九十]+[、．.]/.test(firstLine)) {
+                    // 大章节标题
+                    html += `<h4 class="essay-section-title">${firstLine}</h4>`;
+                    if (lines.length > 1) {
+                        html += `<div class="essay-section-content">${lines.slice(1).join('<br>').replace(/(\d+\.|（\d+）)/g, '<br><strong>$1</strong>')}</div>`;
+                    }
+                } else if (/^\d+[、．.]/.test(firstLine) || /^（\d+）/.test(firstLine)) {
+                    // 小节标题
+                    html += `<p class="essay-paragraph"><strong>${firstLine}</strong><br>${lines.slice(1).join('<br>')}</p>`;
+                } else {
+                    // 普通段落
+                    html += `<p class="essay-paragraph">${part.replace(/\n/g, '<br>')}</p>`;
                 }
             }
 
@@ -1117,7 +1205,7 @@
                         <div class="stat-value" style="color: white;">${totalCorrect}</div>
                         <div class="stat-label" style="color: white;">正确数</div>
                     </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%);">
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%); cursor: pointer;" onclick="showWrongQuestions()">
                         <div class="stat-value" style="color: white;">${totalWrong}</div>
                         <div class="stat-label" style="color: white;">错误数</div>
                     </div>
@@ -1148,6 +1236,135 @@
                 total += countTotalQuestions(type);
             }
             return total;
+        }
+
+        // 显示错题列表
+        function showWrongQuestions() {
+            if (!statsData || !statsData.questions) {
+                document.getElementById('questionArea').innerHTML = `
+                    <div class="question-card">
+                        <h2 style="color: #667eea;">错题本</h2>
+                        <p style="color: #666;">暂无答题记录，开始刷题后会记录错题。</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 收集所有错题ID
+            const wrongQuestionIds = [];
+            for (const [qId, record] of Object.entries(statsData.questions)) {
+                if (record.wrongCount > 0) {
+                    wrongQuestionIds.push({
+                        id: qId,
+                        wrongCount: record.wrongCount,
+                        correctCount: record.correctCount || 0
+                    });
+                }
+            }
+
+            if (wrongQuestionIds.length === 0) {
+                document.getElementById('questionArea').innerHTML = `
+                    <div class="question-card">
+                        <h2 style="color: #667eea;">错题本</h2>
+                        <p style="color: #666;">恭喜！目前没有错题记录。</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // 查找错题详情
+            const wrongQuestions = [];
+            for (const item of wrongQuestionIds) {
+                // 在章节练习中查找
+                for (const [chapter, questions] of Object.entries(questionsData.chapter_practice)) {
+                    const q = questions.find(q => q.id === item.id);
+                    if (q) {
+                        wrongQuestions.push({ ...q, chapter, ...item });
+                        break;
+                    }
+                }
+                // 在模拟题中查找
+                if (!wrongQuestions.find(wq => wq.id === item.id)) {
+                    for (const [examType, exams] of Object.entries(questionsData.mock_exams)) {
+                        for (const [examName, questions] of Object.entries(exams)) {
+                            const q = questions.find(q => q.id === item.id);
+                            if (q) {
+                                wrongQuestions.push({ ...q, examType, examName, ...item });
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 显示错题列表
+            let html = `
+                <div class="question-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2 style="color: #667eea;">错题本 (${wrongQuestions.length}题)</h2>
+                        <button onclick="showWelcome()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">返回首页</button>
+                    </div>
+                    <div style="color: #666; margin-bottom: 15px;">以下是你答错的题目，点击可查看详情：</div>
+            `;
+
+            for (const q of wrongQuestions) {
+                const source = q.chapter ? `章节：${q.chapter}` : `模拟：${q.examType}/${q.examName}`;
+                const typeLabel = q.type === 'choice' ? '单选' : q.type === 'multi_choice' ? '多选' : q.type;
+                html += `
+                    <div class="question-card" style="margin-bottom: 10px; cursor: pointer; border-left: 4px solid #f44336;" onclick="startWrongQuestion('${q.id}')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="color: #f44336; font-size: 12px; margin-bottom: 5px;">${source} | ${typeLabel}</div>
+                                <div style="color: #333; line-height: 1.6;">${q.content.substring(0, 80)}${q.content.length > 80 ? '...' : ''}</div>
+                            </div>
+                            <div style="text-align: right; margin-left: 15px;">
+                                <div style="color: #f44336; font-size: 14px;">错 ${q.wrongCount} 次</div>
+                                <div style="color: #4caf50; font-size: 12px;">对 ${q.correctCount} 次</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            document.getElementById('questionArea').innerHTML = html;
+        }
+
+        // 从错题开始练习
+        function startWrongQuestion(questionId) {
+            // 查找题目所在位置
+            for (const [chapter, questions] of Object.entries(questionsData.chapter_practice)) {
+                const index = questions.findIndex(q => q.id === questionId);
+                if (index !== -1) {
+                    currentCategory = { type: 'chapter', name: chapter };
+                    currentQuestions = questions;
+                    currentIndex = index;
+                    userAnswers = {};
+                    submittedAnswers = {};
+                    correctCount = 0;
+                    wrongCount = 0;
+                    answeredCount = 0;
+                    renderQuestion();
+                    return;
+                }
+            }
+            for (const [examType, exams] of Object.entries(questionsData.mock_exams)) {
+                for (const [examName, questions] of Object.entries(exams)) {
+                    const index = questions.findIndex(q => q.id === questionId);
+                    if (index !== -1) {
+                        currentCategory = { type: 'mock', examType: examType, examName: examName };
+                        currentQuestions = questions;
+                        currentIndex = index;
+                        userAnswers = {};
+                        submittedAnswers = {};
+                        correctCount = 0;
+                        wrongCount = 0;
+                        answeredCount = 0;
+                        renderQuestion();
+                        return;
+                    }
+                }
+            }
         }
 
         // 选择章节
@@ -1329,12 +1546,22 @@
                         <span class="question-number">试题 ${q.number} [${q.id}] - 案例分析</span>
                     </div>
                     <div class="question-content">${formatCaseContent(q.content)}</div>
+                    ${q.images && q.images.length > 0 ? `
+                        <div class="case-images">
+                            ${q.images.map(img => `<img src="${img}" alt="题目图片" style="max-width: 100%; margin: 15px 0;">`).join('')}
+                        </div>
+                    ` : ''}
                     <div class="btn-group">
                         <button class="btn btn-primary" onclick="showCaseAnswer('${q.id}')">查看答案</button>
                     </div>
                     <div class="answer-section hidden" id="answer-${q.id}">
                         <div class="answer-title">参考答案</div>
                         <div class="answer-content">${formatCaseAnswer(q.answer)}</div>
+                        ${q.answer_images && q.answer_images.length > 0 ? `
+                            <div class="case-images">
+                                ${q.answer_images.map(img => `<img src="${img}" alt="答案图片" style="max-width: 100%; margin: 15px 0;">`).join('')}
+                            </div>
+                        ` : ''}
                         ${q.analysis ? `
                             <div class="analysis-title">试题分析</div>
                             <div class="analysis-content">${formatAnalysis(q.analysis)}</div>
@@ -1347,7 +1574,8 @@
 
         // 渲染论文题
         function renderEssayQuestion(q) {
-            const writingGuide = q.analysis || '暂无写作指导';
+            const essaySample = q.essay_sample || '暂无范文';
+            const images = q.images || [];
             let html = `
                 <div class="question-card">
                     <div class="question-header">
@@ -1355,11 +1583,16 @@
                     </div>
                     <div class="question-content">${q.content}</div>
                     <div class="btn-group">
-                        <button class="btn btn-primary" onclick="showEssayAnswer('${q.id}')">查看写作指导</button>
+                        <button class="btn btn-primary" onclick="showEssayAnswer('${q.id}')">查看范文</button>
                     </div>
                     <div class="answer-section hidden" id="answer-${q.id}">
-                        <div class="answer-title">写作指导</div>
-                        <div class="analysis-content">${formatAnalysis(writingGuide)}</div>
+                        <div class="answer-title">范文</div>
+                        <div class="essay-content">${formatEssaySample(essaySample)}</div>
+                        ${images.length > 0 ? `
+                            <div class="essay-images">
+                                ${images.map(img => `<img src="${img}" alt="范文图片" style="max-width: 100%; margin: 15px 0;">`).join('')}
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
             `;

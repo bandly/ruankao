@@ -1108,7 +1108,7 @@
                             <div class="stat-value" style="color: white;">${totalCorrect}</div>
                             <div class="stat-label" style="color: white;">正确数</div>
                         </div>
-                        <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%);">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%); cursor: pointer;" onclick="showWrongQuestions()">
                             <div class="stat-value" style="color: white;">${totalWrong}</div>
                             <div class="stat-label" style="color: white;">错误数</div>
                         </div>
@@ -1124,6 +1124,134 @@
                     </ul>
                 </div>
             `;
+        }
+
+        // 显示错题列表
+        function showWrongQuestions() {
+            closeSidebar();
+            if (!statsData || !statsData.questions) {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="question-card">
+                        <div class="welcome-title">错题本</div>
+                        <p style="color: var(--text-light); text-align: center;">暂无答题记录，开始刷题后会记录错题。</p>
+                    </div>
+                `;
+                document.getElementById('bottomNav').style.display = 'none';
+                return;
+            }
+
+            // 收集所有错题ID
+            const wrongQuestionIds = [];
+            for (const [qId, record] of Object.entries(statsData.questions)) {
+                if (record.wrongCount > 0) {
+                    wrongQuestionIds.push({
+                        id: qId,
+                        wrongCount: record.wrongCount,
+                        correctCount: record.correctCount || 0
+                    });
+                }
+            }
+
+            if (wrongQuestionIds.length === 0) {
+                document.getElementById('mainContent').innerHTML = `
+                    <div class="question-card">
+                        <div class="welcome-title">错题本</div>
+                        <p style="color: var(--text-light); text-align: center;">恭喜！目前没有错题记录。</p>
+                    </div>
+                `;
+                document.getElementById('bottomNav').style.display = 'none';
+                return;
+            }
+
+            // 查找错题详情
+            const wrongQuestions = [];
+            for (const item of wrongQuestionIds) {
+                // 在章节练习中查找
+                for (const [chapter, questions] of Object.entries(data.chapter_practice)) {
+                    const q = questions.find(q => q.id === item.id);
+                    if (q) {
+                        wrongQuestions.push({ ...q, chapter, ...item });
+                        break;
+                    }
+                }
+                // 在模拟题中查找
+                if (!wrongQuestions.find(wq => wq.id === item.id)) {
+                    for (const [examType, exams] of Object.entries(data.mock_exams)) {
+                        for (const [examName, questions] of Object.entries(exams)) {
+                            const q = questions.find(q => q.id === item.id);
+                            if (q) {
+                                wrongQuestions.push({ ...q, examType, examName, ...item });
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 显示错题列表
+            let html = `
+                <div class="question-card" style="padding-bottom: 10px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div class="welcome-title">错题本 (${wrongQuestions.length}题)</div>
+                    </div>
+                    <p style="color: var(--text-light); margin-bottom: 15px;">点击题目查看详情并重做：</p>
+            `;
+
+            for (const q of wrongQuestions) {
+                const source = q.chapter ? `章节：${q.chapter.substring(0, 15)}...` : `模拟：${q.examType}`;
+                const typeLabel = q.type === 'choice' ? '单选' : q.type === 'multi_choice' ? '多选' : q.type;
+                html += `
+                    <div class="question-card" style="margin: 0 0 10px 0; padding: 12px; border-left: 4px solid #f44336;" onclick="startWrongQuestion('${q.id}')">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div style="flex: 1;">
+                                <div style="color: #f44336; font-size: 12px; margin-bottom: 5px;">${source} | ${typeLabel}</div>
+                                <div style="color: var(--text); line-height: 1.5; font-size: 14px;">${q.content.substring(0, 50)}${q.content.length > 50 ? '...' : ''}</div>
+                            </div>
+                            <div style="text-align: right; margin-left: 10px;">
+                                <div style="color: #f44336; font-size: 13px;">错${q.wrongCount}</div>
+                                <div style="color: #4caf50; font-size: 11px;">对${q.correctCount}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += '</div>';
+            document.getElementById('mainContent').innerHTML = html;
+            document.getElementById('bottomNav').style.display = 'none';
+        }
+
+        // 从错题开始练习
+        function startWrongQuestion(questionId) {
+            // 查找题目所在位置
+            for (const [chapter, questions] of Object.entries(data.chapter_practice)) {
+                const index = questions.findIndex(q => q.id === questionId);
+                if (index !== -1) {
+                    currentQuestions = questions;
+                    currentIndex = index;
+                    userAnswers = {};
+                    submittedAnswers = {};
+                    correctCount = 0;
+                    wrongCount = 0;
+                    renderQuestion();
+                    return;
+                }
+            }
+            for (const [examType, exams] of Object.entries(data.mock_exams)) {
+                for (const [examName, questions] of Object.entries(exams)) {
+                    const index = questions.findIndex(q => q.id === questionId);
+                    if (index !== -1) {
+                        currentQuestions = questions;
+                        currentIndex = index;
+                        userAnswers = {};
+                        submittedAnswers = {};
+                        correctCount = 0;
+                        wrongCount = 0;
+                        renderQuestion();
+                        return;
+                    }
+                }
+            }
         }
 
         // 开始章节练习
@@ -1393,7 +1521,7 @@
                             <div class="stat-value" style="color: white;">${totalCorrect}</div>
                             <div class="stat-label" style="color: white;">总正确数</div>
                         </div>
-                        <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%);">
+                        <div class="stat-card" style="background: linear-gradient(135deg, #f44336 0%, #e57373 100%); cursor: pointer;" onclick="showWrongQuestions()">
                             <div class="stat-value" style="color: white;">${totalWrong}</div>
                             <div class="stat-label" style="color: white;">总错误数</div>
                         </div>
