@@ -1924,7 +1924,7 @@
         "number": 2,
         "id": "352082",
         "type": "multi_choice",
-        "content": "",
+        "content": "给定关系模式R（U，F），其中：属性集U={A1，A2，A3，A4，A5，A6}，函数依赖集F={A1→A2， A1→A3，A3→A4，A1A5→A6}。关系模式R的候选码为（ ），由于R存在非主属性对码的部分函数依赖，所以R属于（ ）。",
         "image": "https://img.kuaiwenyun.com/images/shiti/2023-05/948/Ap95eP8wkY.png",
         "options": [
           [
@@ -2053,7 +2053,7 @@
         "number": 5,
         "id": "418834",
         "type": "multi_choice",
-        "content": "",
+        "content": "假设描述职工信息的属性有：职工号、姓名、性别和出生日期；描述部门信息的属性有：部门号、部门名称和办公地点。一个部门有多个职工，每个职工只能在一个部门工作；一个部门只能有一个部门经理，部门经理应该为本部门的职工，取值为职工号。则在设计E-R图时，应将职工和部门作为实体，部门和职工之间的工作联系是（ ），要描述部门经理与部门之间的任职联系，应采用（ ）。由该E-R图转换并优化后的关系模式为（ ）。",
         "image": "",
         "options": [
           [
@@ -2499,7 +2499,7 @@
         "number": 1,
         "id": "26391",
         "type": "choice",
-        "content": "",
+        "content": "以下关于Cache的叙述中，正确的是（ ）。",
         "image": "",
         "options": [
           [
@@ -2912,7 +2912,7 @@
         "number": 12,
         "id": "418521",
         "type": "multi_choice",
-        "content": "",
+        "content": "假设文件系统采用索引节点管理，且索引节点有8个地址项iaddr[0]～iaddr[7]，每个地址项大小为4字节，iaddr[0]～iaddr[4]采用直接地址索引，iaddr[5]和iaddr[6]采用一级间接地址索引，iaddr[7]采用二级间接地址索引。假设磁盘索引块和磁盘数据块大小均为1KB字节，文件File1的索引节点如下图所示。若用户访问文件File1中逻辑块号为516的信息，则对应的物理块号为（ ）；90号物理块存放的是（ ）。",
         "image": "https://lstatic.xisaiwang.com/tiku/uploadfiles/2016-03/0ef30ad61ac74b7fbc6086a39cba69b7_.png",
         "options": [
           [
@@ -4581,7 +4581,7 @@
         "number": 18,
         "id": "455064",
         "type": "multi_choice",
-        "content": "",
+        "content": "体系结构权衡分析方法（Architecture Tradeoff Analysis Method，ATAM）包含4个主要的活动领域，分别是场景和需求收集、体系结构视图和场景实现、（ ）、折中。基于场景的架构分析方法（Scenarios-based Architecture Analysis Method，SAAM）的主要输入是问题描述、需求声明和（ ）。",
         "image": "",
         "options": [
           [
@@ -4710,7 +4710,7 @@
         "number": 21,
         "id": "89518",
         "type": "multi_choice",
-        "content": "",
+        "content": "软件架构风格是描述某一特定应用领域中系统组织方式的惯用模式。一个体系结构定义了一个词汇表和一组（ ）。架构风格反映领域中众多系统所共有的结构和（ ）。",
         "image": "",
         "options": [
           [
@@ -4965,7 +4965,7 @@
         "number": 2,
         "id": "83750",
         "type": "choice",
-        "content": "",
+        "content": "嵌入式系统初始化过程主要有3个环节，按照自底向上、从硬件到软件的次序依次为（ ）。",
         "image": "",
         "options": [
           [
@@ -4996,7 +4996,7 @@
         "number": 3,
         "id": "383973",
         "type": "essay",
-        "content": "",
+        "content": "采用微内核结构的操作系统设计的基本思想是内核只完成操作系统最基本的功能并在核心态下运行，其他功能运行在用户态，其结构图如下所示。图中空（a）、（b）、（c）和（d）应分别选择如下所示①~④中的哪一项？（ ）。",
         "image": "https://img.kuaiwenyun.com/images/shiti/2019-10/595/sqFZGWBe3c.png",
         "options": [],
         "answer": "C",
@@ -6308,7 +6308,7 @@
         "number": 11,
         "id": "4543",
         "type": "choice",
-        "content": "",
+        "content": "配置项是构成产品配置的主要元素，其中（ ）不属于配置项。",
         "image": "",
         "options": [
           [
@@ -6744,7 +6744,7 @@
         "number": 13,
         "id": "77363",
         "type": "choice",
-        "content": "",
+        "content": "按照网络分层设计模型，通常把局域网设计为3层，即核心层、汇聚层和接入层，以下关于分层网络功能的描述中，不正确的是（ ）。",
         "image": "",
         "options": [
           [
@@ -6775,7 +6775,7 @@
         "number": 14,
         "id": "86234",
         "type": "choice",
-        "content": "",
+        "content": "IPv6站点通过IPv4网络通信需要使用隧道技术，常用的3种自动隧道技术不包括（）。",
         "image": "",
         "options": [
           [
@@ -7263,7 +7263,7 @@
           "number": 14,
           "id": "60434988",
           "type": "multi_choice",
-          "content": "",
+          "content": "GB/T 8566-2022全面、系统地阐述了软件生命周期的5个主要过程：获取过程、（ ） 、开发过程、运作过程、维护过程，9个支持过程：文档编制过程、配置管理过程、质量保证过程、验证过程、确认过程、联合评审过程、审核过程、问题解决过程和（ ），7个组织过程：管理过程、基础设施过程、（ ） 。",
           "image": "",
           "options": [
             [
@@ -8443,7 +8443,7 @@
           "number": 48,
           "id": "454957",
           "type": "choice",
-          "content": "",
+          "content": "嵌入式系统设计一般要考虑低功耗， 软件设计也要考虑低功耗设计，软件低功耗设计一般采用（ ）。",
           "image": "",
           "options": [
             [
@@ -9044,7 +9044,7 @@
           "number": 2,
           "id": "26391",
           "type": "choice",
-          "content": "",
+          "content": "以下关于Cache的叙述中，正确的是（ ）。",
           "image": "",
           "options": [
             [
@@ -10278,7 +10278,7 @@
           "number": 36,
           "id": "77388",
           "type": "choice",
-          "content": "",
+          "content": "将系统需求模型转换为架构模型是软件系统需求分析阶段的一项重要工作，以下描述中，（ ）是在转换过程中需要关注的问题。",
           "image": "",
           "options": [
             [
@@ -10934,7 +10934,7 @@
           "number": 56,
           "id": "418837",
           "type": "choice",
-          "content": "",
+          "content": "著作权中，（ ）的保护期不受限制。",
           "image": "",
           "options": [
             [

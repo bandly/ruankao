@@ -42,10 +42,37 @@ def parse_html_file(filepath):
             'pass_rate': ''
         }
 
-        # 提取题目文本（试题编号后的<p>标签）
+        # 提取题目文本（试题编号后的内容，直到遇到选项div或试题信息）
+        # 先尝试匹配 <p> 标签内的内容
         content_match = re.search(r'</div>\s*<p>(.*?)</p>', block, re.DOTALL)
         if content_match:
             question['content'] = clean_html(content_match.group(1))
+
+        # 如果没有匹配到 <p> 标签内容，尝试提取 </div> 后直接跟随的文本内容
+        # 直到遇到第一个 <div> 标签（选项或试题信息）
+        if not question['content']:
+            # 提取试题编号div后的所有内容，直到下一个div或<p>
+            content_match2 = re.search(r'</div>\s*(.*?)(?:<div>|<p>)', block, re.DOTALL)
+            if content_match2:
+                content_text = content_match2.group(1).strip()
+                # 移除 <br> 标签和空白
+                content_text = re.sub(r'<br\s*/?>', ' ', content_text)
+                content_text = clean_html(content_text)
+                if content_text and not content_text.startswith('试题'):
+                    question['content'] = content_text
+
+        # 如果仍然没有内容，检查紧跟的 <div> 是否是题目内容（不含选项格式）
+        if not question['content']:
+            # 匹配试题编号后紧跟的 <div> 标签内容
+            div_content_match = re.search(r'</div>\s*<div>(.*?)</div>', block, re.DOTALL)
+            if div_content_match:
+                div_text = div_content_match.group(1).strip()
+                # 移除 <br> 标签
+                div_text = re.sub(r'<br\s*/?>', ' ', div_text)
+                div_text = clean_html(div_text)
+                # 如果这个div不包含选项格式（A. B. C. D.）且不为空，则作为题目内容
+                if div_text and not re.search(r'[A-D]\.', div_text) and not div_text.startswith('试题'):
+                    question['content'] = div_text
 
         # 提取图片URL
         img_match = re.search(r'<img[^>]+src="([^"]+)"', block)
