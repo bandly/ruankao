@@ -1604,10 +1604,16 @@
                     </div>
                     <div class="question-content">${q.content}</div>
                     ${q.image ? `<div class="question-image"><img src="${q.image}" alt="题目图片" style="max-width: 100%; margin-top: 15px;"></div>` : ''}
-                    ${q.lecture_hint ? `
-                        <div style="margin: 15px 0; padding: 15px; background: #e3f2fd; border-radius: 10px; border-left: 4px solid #1976d2;">
-                            <div style="color: #1976d2; font-weight: 600; margin-bottom: 8px;">📚 讲义提示</div>
-                            <div style="color: #333; line-height: 1.6;">${q.lecture_hint}</div>
+                    ${q.video_links && q.video_links.length > 0 ? `
+                        <div style="margin: 15px 0; padding: 15px; background: #fff3e0; border-radius: 10px; border-left: 4px solid #ff9800;">
+                            <div style="color: #ff9800; font-weight: 600; margin-bottom: 8px;">🎬 相关视频</div>
+                            <div style="color: #333; line-height: 1.6;">
+                                ${q.video_links.slice(0, 3).map(v => `
+                                    <div style="margin: 5px 0;">
+                                        <span style="color: #666;">• ${v.title.split('/').pop().replace('.mp4', '')}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
                         </div>
                     ` : ''}
                     <div class="options-container">
@@ -1666,9 +1672,11 @@
                         <div class="analysis-title">试题解析</div>
                         <div class="analysis-content">${formatAnalysis(q.analysis)}</div>
                     ` : ''}
-                    ${q.lecture_hint ? `
-                        <div class="analysis-title" style="color: #1976d2;">讲义提示</div>
-                        <div class="analysis-content" style="background: #e3f2fd; border-left-color: #1976d2;">${q.lecture_hint}</div>
+                    ${q.video_links && q.video_links.length > 0 ? `
+                        <div class="analysis-title" style="color: #ff9800;">🎬 相关视频课程</div>
+                        <div class="analysis-content" style="background: #fff3e0; border-left-color: #ff9800;">
+                            ${q.video_links.slice(0, 3).map(v => `<div style="margin: 4px 0;">• ${v.title.split('/').pop().replace('.mp4', '')}</div>`).join('')}
+                        </div>
                     ` : ''}
                 </div>
             `;
@@ -1705,9 +1713,11 @@
                             <div class="analysis-title">试题分析</div>
                             <div class="analysis-content">${formatAnalysis(q.analysis)}</div>
                         ` : ''}
-                        ${q.lecture_hint ? `
-                            <div class="analysis-title" style="color: #1976d2;">讲义提示</div>
-                            <div class="analysis-content" style="background: #e3f2fd; border-left-color: #1976d2;">${q.lecture_hint}</div>
+                        ${q.video_links && q.video_links.length > 0 ? `
+                            <div class="analysis-title" style="color: #ff9800;">🎬 相关视频课程</div>
+                            <div class="analysis-content" style="background: #fff3e0; border-left-color: #ff9800;">
+                                ${q.video_links.slice(0, 3).map(v => `<div style="margin: 4px 0;">• ${v.title.split('/').pop().replace('.mp4', '')}</div>`).join('')}
+                            </div>
                         ` : ''}
                     </div>
                 </div>
