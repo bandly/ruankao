@@ -1436,6 +1436,14 @@
 
             html += `<div class="question-content">${q.content}</div>`;
 
+            // 讲义提示
+            if (q.lecture_hint) {
+                html += `<div style="margin: 12px 0; padding: 12px; background: #e3f2fd; border-radius: 8px; border-left: 3px solid #1976d2;">
+                    <div style="color: #1976d2; font-weight: 600; margin-bottom: 6px; font-size: 13px;">📚 讲义提示</div>
+                    <div style="color: #333; line-height: 1.5; font-size: 14px;">${q.lecture_hint}</div>
+                </div>`;
+            }
+
             for (let i = 0; i < q.options.length; i++) {
                 if (isMulti) html += `<div class="options-label">第${i + 1}空</div>`;
                 html += '<div class="options-group">';
