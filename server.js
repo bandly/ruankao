@@ -36,6 +36,23 @@ if (isLocal && !fs.existsSync(STATS_FILE)) {
 
 app.use(express.static(__dirname));
 
+// 视频目录静态服务
+const VIDEO_BASE_PATH = '/Users/bandly/Documents/视频课程/0.希塞2505/1.【新版】系统架构设计师精讲班视频教程';
+app.use('/videos', express.static(VIDEO_BASE_PATH));
+
+// 视频列表接口（用于获取可播放的视频 URL）
+app.get('/api/video/:path', (req, res) => {
+    try {
+        const videoPath = req.params.path;
+        // 将本地路径转换为可访问的 URL
+        const relativePath = videoPath.replace(VIDEO_BASE_PATH, '');
+        const videoUrl = `/videos${relativePath}`;
+        res.json({ success: true, url: videoUrl, path: videoPath });
+    } catch (err) {
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 // 获取统计数据
 app.get('/api/stats', async (req, res) => {
     try {

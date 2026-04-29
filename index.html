@@ -1278,29 +1278,31 @@
 
         // 打开视频文件
         function openVideo(videoPath, videoName) {
-            // 显示视频路径对话框
+            // 将本地路径转换为 HTTP URL
+            const videoBase = '/Users/bandly/Documents/视频课程/0.希塞2505/1.【新版】系统架构设计师精讲班视频教程';
+            const relativePath = videoPath.replace(videoBase, '');
+            const videoUrl = `/videos${relativePath}`;
+
+            // 创建视频播放模态框
             const modal = document.createElement('div');
-            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            modal.id = 'videoModal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000;';
             modal.innerHTML = `
-                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%;">
-                    <h3 style="color: #ff9800; margin-bottom: 15px;">🎬 ${videoName}</h3>
-                    <p style="color: #666; margin-bottom: 15px; font-size: 14px;">视频文件路径：</p>
-                    <div style="background: #f5f5f5; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 12px; color: #333; word-break: break-all;">
-                        ${videoPath}
-                    </div>
-                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
-                        <button onclick="navigator.clipboard.writeText('${videoPath}'); this.textContent='已复制！';"
-                                style="padding: 10px 20px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                            复制路径
-                        </button>
-                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
-                                style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 8px; cursor: pointer;">
-                            关闭
+                <div style="background: #1a1a1a; padding: 20px; border-radius: 15px; max-width: 90%; width: 800px; position: relative;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="color: #fff; margin: 0;">🎬 ${videoName}</h3>
+                        <button onclick="document.getElementById('videoModal').remove()"
+                                style="background: #333; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer;">
+                            关闭 ✕
                         </button>
                     </div>
-                    <p style="color: #999; margin-top: 15px; font-size: 12px;">
-                        提示：复制路径后，可在 Finder 中打开，或使用视频播放器播放
-                    </p>
+                    <video controls autoplay style="width: 100%; max-height: 70vh; background: #000; border-radius: 8px;">
+                        <source src="${videoUrl}" type="video/mp4">
+                        您的浏览器不支持视频播放，请复制路径用播放器打开。
+                    </video>
+                    <div style="margin-top: 10px; color: #666; font-size: 12px; text-align: center;">
+                        如果无法播放，请确保服务器正在运行 (node server.js)
+                    </div>
                 </div>
             `;
             document.body.appendChild(modal);
