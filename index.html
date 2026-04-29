@@ -1276,6 +1276,37 @@
             document.getElementById('questionArea').innerHTML += html;
         }
 
+        // 打开视频文件
+        function openVideo(videoPath, videoName) {
+            // 显示视频路径对话框
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;';
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%;">
+                    <h3 style="color: #ff9800; margin-bottom: 15px;">🎬 ${videoName}</h3>
+                    <p style="color: #666; margin-bottom: 15px; font-size: 14px;">视频文件路径：</p>
+                    <div style="background: #f5f5f5; padding: 12px; border-radius: 8px; margin-bottom: 20px; font-size: 12px; color: #333; word-break: break-all;">
+                        ${videoPath}
+                    </div>
+                    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                        <button onclick="navigator.clipboard.writeText('${videoPath}'); this.textContent='已复制！';"
+                                style="padding: 10px 20px; background: #4caf50; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            复制路径
+                        </button>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()"
+                                style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 8px; cursor: pointer;">
+                            关闭
+                        </button>
+                    </div>
+                    <p style="color: #999; margin-top: 15px; font-size: 12px;">
+                        提示：复制路径后，可在 Finder 中打开，或使用视频播放器播放
+                    </p>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
+        }
+
         // 显示欢迎页面
         function showWelcome() {
             const overall = statsData.overall || {};
@@ -1604,18 +1635,6 @@
                     </div>
                     <div class="question-content">${q.content}</div>
                     ${q.image ? `<div class="question-image"><img src="${q.image}" alt="题目图片" style="max-width: 100%; margin-top: 15px;"></div>` : ''}
-                    ${q.video_links && q.video_links.length > 0 ? `
-                        <div style="margin: 15px 0; padding: 15px; background: #fff3e0; border-radius: 10px; border-left: 4px solid #ff9800;">
-                            <div style="color: #ff9800; font-weight: 600; margin-bottom: 8px;">🎬 相关视频</div>
-                            <div style="color: #333; line-height: 1.6;">
-                                ${q.video_links.slice(0, 3).map(v => `
-                                    <div style="margin: 5px 0;">
-                                        <span style="color: #666;">• ${v.title.split('/').pop().replace('.mp4', '')}</span>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                    ` : ''}
                     <div class="options-container">
             `;
 
@@ -1675,7 +1694,15 @@
                     ${q.video_links && q.video_links.length > 0 ? `
                         <div class="analysis-title" style="color: #ff9800;">🎬 相关视频课程</div>
                         <div class="analysis-content" style="background: #fff3e0; border-left-color: #ff9800;">
-                            ${q.video_links.slice(0, 3).map(v => `<div style="margin: 4px 0;">• ${v.title.split('/').pop().replace('.mp4', '')}</div>`).join('')}
+                            ${q.video_links.slice(0, 3).map(v => {
+                                const videoName = v.title.split('/').pop().replace('.mp4', '');
+                                return `<div style="margin: 4px 0;">
+                                    <a href="#" onclick="openVideo('${v.path.replace(/\\/g, '/')}', '${videoName}'); return false;"
+                                       style="color: #ff9800; text-decoration: underline; cursor: pointer;">
+                                        📹 ${videoName}
+                                    </a>
+                                </div>`;
+                            }).join('')}
                         </div>
                     ` : ''}
                 </div>
@@ -1716,7 +1743,15 @@
                         ${q.video_links && q.video_links.length > 0 ? `
                             <div class="analysis-title" style="color: #ff9800;">🎬 相关视频课程</div>
                             <div class="analysis-content" style="background: #fff3e0; border-left-color: #ff9800;">
-                                ${q.video_links.slice(0, 3).map(v => `<div style="margin: 4px 0;">• ${v.title.split('/').pop().replace('.mp4', '')}</div>`).join('')}
+                                ${q.video_links.slice(0, 3).map(v => {
+                                    const videoName = v.title.split('/').pop().replace('.mp4', '');
+                                    return `<div style="margin: 4px 0;">
+                                        <a href="#" onclick="openVideo('${v.path.replace(/\\/g, '/')}', '${videoName}'); return false;"
+                                           style="color: #ff9800; text-decoration: underline; cursor: pointer;">
+                                            📹 ${videoName}
+                                        </a>
+                                    </div>`;
+                                }).join('')}
                             </div>
                         ` : ''}
                     </div>
