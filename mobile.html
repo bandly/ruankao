@@ -1469,6 +1469,7 @@
             html += `<div class="answer-box ${isSubmitted ? '' : 'hidden'}">
                 <div class="answer-title">正确答案: ${q.answer}</div>
                 ${q.analysis ? `<div class="analysis-title">试题解析</div><div class="analysis-content">${formatAnalysis(q.analysis)}</div>` : ''}
+                ${q.lecture_hint ? `<div class="analysis-title" style="color: #1976d2;">讲义提示</div><div class="analysis-content" style="background: #e3f2fd; border-left-color: #1976d2;">${q.lecture_hint}</div>` : ''}
             </div>`;
 
             return html;
@@ -1493,6 +1494,7 @@
                 ${q.answer_images && q.answer_images.length > 0 ?
                     `<div class="question-image">${q.answer_images.map(img => `<img src="${img}" alt="答案图片">`).join('')}</div>` : ''}
                 ${q.analysis ? `<div class="analysis-title">试题分析</div><div class="analysis-content">${formatAnalysis(q.analysis)}</div>` : ''}
+                ${q.lecture_hint ? `<div class="analysis-title" style="color: #1976d2;">讲义提示</div><div class="analysis-content" style="background: #e3f2fd; border-left-color: #1976d2;">${q.lecture_hint}</div>` : ''}
             </div>`;
             return html;
         }
