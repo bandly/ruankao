@@ -808,16 +808,18 @@
         let wrongCount = 0;
         let currentQId = null;
 
+        // 用户名，默认 bandly
+        const currentUser = sessionStorage.getItem('ruankao_user') || 'bandly';
+        sessionStorage.setItem('ruankao_user', currentUser);
+
         // 加载统计数据
         async function loadStats() {
             try {
-                const response = await fetch('/api/stats');
+                const response = await fetch(`/api/stats?user=${currentUser}`);
                 statsData = await response.json();
             } catch (e) {
-                console.log('统计数据加载失败，使用本地存储');
-                // 使用 localStorage 作为后备
-                const localStats = localStorage.getItem('ruankao_stats');
-                statsData = localStats ? JSON.parse(localStats) : {};
+                console.log('统计数据加载失败');
+                statsData = { overall: {}, questions: {} };
             }
         }
 
@@ -831,7 +833,7 @@
                     wrongCount: existing.wrongCount + (isCorrect ? 0 : 1)
                 };
 
-                const response = await fetch(`/api/stats/question/${qId}`, {
+                const response = await fetch(`/api/stats/question/${qId}?user=${currentUser}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(record)
@@ -841,26 +843,7 @@
                     statsData = result.stats;
                 }
             } catch (e) {
-                // 使用 localStorage 作为后备
-                if (!statsData.questions) statsData.questions = {};
-                const existing = statsData.questions[qId] || { attempts: 0, correctCount: 0, wrongCount: 0 };
-                statsData.questions[qId] = {
-                    attempts: existing.attempts + 1,
-                    correctCount: existing.correctCount + (isCorrect ? 1 : 0),
-                    wrongCount: existing.wrongCount + (isCorrect ? 0 : 1)
-                };
-                // 更新总体统计
-                let totalAttempts = 0, totalCorrect = 0, totalWrong = 0;
-                for (const q of Object.values(statsData.questions)) {
-                    totalAttempts += q.attempts || 0;
-                    totalCorrect += q.correctCount || 0;
-                    totalWrong += q.wrongCount || 0;
-                }
-                statsData.overall = {
-                    totalAttempts, totalCorrect, totalWrong,
-                    accuracy: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0
-                };
-                localStorage.setItem('ruankao_stats', JSON.stringify(statsData));
+                console.error('保存答题记录失败:', e);
             }
         }
 
@@ -1197,11 +1180,12 @@
                     <p style="color: var(--text-light); margin-bottom: 15px;">点击题目查看详情并重做：</p>
             `;
 
-            for (const q of wrongQuestions) {
+            for (let i = 0; i < wrongQuestions.length; i++) {
+                const q = wrongQuestions[i];
                 const source = q.chapter ? `章节：${q.chapter.substring(0, 15)}...` : `模拟：${q.examType}`;
                 const typeLabel = q.type === 'choice' ? '单选' : q.type === 'multi_choice' ? '多选' : q.type;
                 html += `
-                    <div class="question-card" style="margin: 0 0 10px 0; padding: 12px; border-left: 4px solid #f44336;" onclick="startWrongQuestion('${q.id}')">
+                    <div class="question-card" style="margin: 0 0 10px 0; padding: 12px; border-left: 4px solid #f44336;" onclick="startWrongQuestionPractice(${i})">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div style="flex: 1;">
                                 <div style="color: #f44336; font-size: 12px; margin-bottom: 5px;">${source} | ${typeLabel}</div>
@@ -1219,9 +1203,24 @@
             html += '</div>';
             document.getElementById('mainContent').innerHTML = html;
             document.getElementById('bottomNav').style.display = 'none';
+
+            // 保存错题列表供后续使用
+            window.wrongQuestionsList = wrongQuestions;
         }
 
-        // 从错题开始练习
+        // 从错题开始练习（使用错题列表作为题目来源）
+        function startWrongQuestionPractice(index) {
+            if (!window.wrongQuestionsList || window.wrongQuestionsList.length === 0) return;
+            currentQuestions = window.wrongQuestionsList;
+            currentIndex = index;
+            userAnswers = {};
+            submittedAnswers = {};
+            correctCount = 0;
+            wrongCount = 0;
+            renderQuestion();
+        }
+
+        // 从错题开始练习（旧方法，按题目ID查找）
         function startWrongQuestion(questionId) {
             // 查找题目所在位置
             for (const [chapter, questions] of Object.entries(data.chapter_practice)) {

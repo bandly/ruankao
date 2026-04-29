@@ -793,6 +793,10 @@
         let wrongCount = 0;
         let answeredCount = 0;
 
+        // 用户名，默认 bandly
+        const currentUser = sessionStorage.getItem('ruankao_user') || 'bandly';
+        sessionStorage.setItem('ruankao_user', currentUser);
+
         // 格式化解析内容，使其分段显示
         function formatAnalysis(text) {
             if (!text) return '';
@@ -978,11 +982,11 @@
         // 加载统计数据
         async function loadStats() {
             try {
-                const response = await fetch('/api/stats');
+                const response = await fetch(`/api/stats?user=${currentUser}`);
                 statsData = await response.json();
             } catch (error) {
                 console.log('统计数据加载失败，使用空数据');
-                statsData = {};
+                statsData = { overall: {}, questions: {} };
             }
         }
 
@@ -996,7 +1000,7 @@
                     wrongCount: existing.wrongCount + (isCorrect ? 0 : 1)
                 };
 
-                const response = await fetch(`/api/stats/question/${qId}`, {
+                const response = await fetch(`/api/stats/question/${qId}?user=${currentUser}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(record)
@@ -1307,11 +1311,12 @@
                     <div style="color: #666; margin-bottom: 15px;">以下是你答错的题目，点击可查看详情：</div>
             `;
 
-            for (const q of wrongQuestions) {
+            for (let i = 0; i < wrongQuestions.length; i++) {
+                const q = wrongQuestions[i];
                 const source = q.chapter ? `章节：${q.chapter}` : `模拟：${q.examType}/${q.examName}`;
                 const typeLabel = q.type === 'choice' ? '单选' : q.type === 'multi_choice' ? '多选' : q.type;
                 html += `
-                    <div class="question-card" style="margin-bottom: 10px; cursor: pointer; border-left: 4px solid #f44336;" onclick="startWrongQuestion('${q.id}')">
+                    <div class="question-card" style="margin-bottom: 10px; cursor: pointer; border-left: 4px solid #f44336;" onclick="startWrongQuestionPractice(${i})">
                         <div style="display: flex; justify-content: space-between; align-items: center;">
                             <div style="flex: 1;">
                                 <div style="color: #f44336; font-size: 12px; margin-bottom: 5px;">${source} | ${typeLabel}</div>
@@ -1328,9 +1333,26 @@
 
             html += '</div>';
             document.getElementById('questionArea').innerHTML = html;
+
+            // 保存错题列表供后续使用
+            window.wrongQuestionsList = wrongQuestions;
         }
 
-        // 从错题开始练习
+        // 从错题开始练习（使用错题列表作为题目来源）
+        function startWrongQuestionPractice(index) {
+            if (!window.wrongQuestionsList || window.wrongQuestionsList.length === 0) return;
+            currentCategory = { type: 'wrong' };
+            currentQuestions = window.wrongQuestionsList;
+            currentIndex = index;
+            userAnswers = {};
+            submittedAnswers = {};
+            correctCount = 0;
+            wrongCount = 0;
+            answeredCount = 0;
+            renderQuestion();
+        }
+
+        // 从错题开始练习（旧方法，按题目ID查找）
         function startWrongQuestion(questionId) {
             // 查找题目所在位置
             for (const [chapter, questions] of Object.entries(questionsData.chapter_practice)) {
