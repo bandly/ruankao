@@ -754,6 +754,78 @@
             max-height: 400px;
             overflow-y: auto;
         }
+
+        /* 登录弹窗 */
+        .login-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            z-index: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-modal.hidden {
+            display: none;
+        }
+
+        .login-content {
+            width: 90%;
+            max-width: 320px;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .login-input-group {
+            margin-bottom: 20px;
+        }
+
+        .login-input-group label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .login-input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .login-input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -786,6 +858,18 @@
         <div class="sidebar-content" id="sidebarContent"></div>
     </aside>
 
+    <!-- 用户登录弹窗 -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-content">
+            <div class="login-title">刷题系统登录</div>
+            <div class="login-input-group">
+                <label>请输入用户名：</label>
+                <input type="text" id="usernameInput" placeholder="输入用户名" value="bandly">
+            </div>
+            <button class="login-btn" onclick="confirmUsername()">开始刷题</button>
+        </div>
+    </div>
+
     <!-- 结果弹窗 -->
     <div class="result-modal" id="resultModal">
         <div class="result-content">
@@ -808,9 +892,27 @@
         let wrongCount = 0;
         let currentQId = null;
 
-        // 用户名，默认 bandly
-        const currentUser = sessionStorage.getItem('ruankao_user') || 'bandly';
-        sessionStorage.setItem('ruankao_user', currentUser);
+        // 用户名（登录后设置）
+        let currentUser = sessionStorage.getItem('ruankao_user') || '';
+
+        // 确认用户名
+        function confirmUsername() {
+            const input = document.getElementById('usernameInput');
+            const username = input.value.trim();
+            if (!username) {
+                alert('请输入用户名');
+                return;
+            }
+            currentUser = username;
+            sessionStorage.setItem('ruankao_user', currentUser);
+            document.getElementById('loginModal').classList.add('hidden');
+            loadData();
+        }
+
+        // 如果已有用户名，直接隐藏登录弹窗并加载数据
+        if (currentUser) {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
 
         // 加载统计数据
         async function loadStats() {
@@ -1538,7 +1640,10 @@
         }
 
         // 初始化
-        loadData();
+        // 如果已有用户名，直接加载；否则等待登录弹窗确认
+        if (currentUser) {
+            loadData();
+        }
     </script>
 </body>
 </html>
