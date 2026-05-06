@@ -1154,7 +1154,7 @@
             modal.id = 'videoModal';
             modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); display: flex; align-items: center; justify-content: center; z-index: 1000;';
             modal.innerHTML = `
-                <div style="width: 95%; max-width: 100%; position: relative;">
+                <div style="width: 95%; position: relative;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding: 10px; background: #1a1a1a; border-radius: 8px;">
                         <div style="color: #fff; font-size: 14px; font-weight: 600;">🎬 ${videoName}</div>
                         <button onclick="document.getElementById('videoModal').remove()"
@@ -1162,13 +1162,34 @@
                             关闭 ✕
                         </button>
                     </div>
-                    <video controls autoplay playsinline style="width: 100%; max-height: 75vh; background: #000; border-radius: 8px;">
+                    <video id="videoPlayer" controls playsinline style="width: 100%; max-height: 65vh; background: #000; border-radius: 8px;">
                         <source src="${videoUrl}" type="video/mp4">
-                        您的浏览器不支持视频播放
                     </video>
+                    <div id="videoError" style="display: none; padding: 15px; background: #2a2a2a; border-radius: 8px; margin-top: 10px;">
+                        <div style="color: #ff9800; margin-bottom: 8px; font-size: 14px;">⚠️ 视频无法加载</div>
+                        <div style="color: #ccc; margin-bottom: 8px; font-size: 12px;">视频在本地电脑，请复制路径：</div>
+                        <div style="background: #333; padding: 8px; border-radius: 6px; margin-bottom: 12px; font-size: 11px; color: #fff; word-break: break-all; max-height: 60px; overflow-y: auto;">
+                            ${videoPath}
+                        </div>
+                        <button onclick="navigator.clipboard.writeText('${videoPath}').then(() => alert('路径已复制'));"
+                                style="padding: 10px 20px; background: #ff9800; color: #fff; border: none; border-radius: 8px; cursor: pointer; width: 100%;">
+                            📋 复制视频路径
+                        </button>
+                    </div>
+                    <div style="margin-top: 8px; color: #888; font-size: 11px; padding: 8px; background: #1a1a1a; border-radius: 6px;">
+                        提示：视频在本地电脑，本地运行 server.js 可播放，公网访问请复制路径本地打开
+                    </div>
                 </div>
             `;
             document.body.appendChild(modal);
+
+            // 检测视频加载失败
+            const video = document.getElementById('videoPlayer');
+            video.onerror = function() {
+                video.style.display = 'none';
+                document.getElementById('videoError').style.display = 'block';
+            };
+
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
 

@@ -1296,22 +1296,41 @@
                             关闭 ✕
                         </button>
                     </div>
-                    <video controls autoplay style="width: 100%; max-height: 70vh; background: #000; border-radius: 8px;">
+                    <video id="videoPlayer" controls style="width: 100%; max-height: 60vh; background: #000; border-radius: 8px;">
                         <source src="${videoUrl}" type="video/mp4">
-                        您的浏览器不支持视频播放，请复制路径用播放器打开。
                     </video>
-                    <div style="margin-top: 10px; color: #666; font-size: 12px; text-align: center;">
-                        如果无法播放，请确保服务器正在运行 (node server.js)
+                    <div id="videoError" style="display: none; padding: 20px; background: #2a2a2a; border-radius: 8px; margin-top: 10px;">
+                        <div style="color: #ff9800; margin-bottom: 10px;">⚠️ 视频无法加载</div>
+                        <div style="color: #ccc; margin-bottom: 10px; font-size: 14px;">视频文件位于本地电脑，请在本地打开：</div>
+                        <div style="background: #333; padding: 12px; border-radius: 6px; margin-bottom: 15px; font-size: 12px; color: #fff; word-break: break-all;">
+                            ${videoPath}
+                        </div>
+                        <button onclick="navigator.clipboard.writeText('${videoPath}').then(() => alert('路径已复制，请在本地播放器中打开'));"
+                                style="padding: 10px 20px; background: #ff9800; color: #fff; border: none; border-radius: 8px; cursor: pointer;">
+                            📋 复制视频路径
+                        </button>
+                    </div>
+                    <div style="margin-top: 10px; color: #888; font-size: 12px;">
+                        提示：视频在本地电脑上。本地运行 node server.js 可直接播放；公网访问请复制路径到本地打开。
                     </div>
                 </div>
             `;
             document.body.appendChild(modal);
+
+            // 检测视频加载失败
+            const video = document.getElementById('videoPlayer');
+            video.onerror = function() {
+                video.style.display = 'none';
+                document.getElementById('videoError').style.display = 'block';
+            };
+
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
 
         // 显示欢迎页面
         function showWelcome() {
-            const overall = statsData.overall || {};
+            // statsData 已经是用户层级的数据（从 API /api/stats?user=xxx 返回）
+            const overall = statsData?.overall || {};
             const totalAttempts = overall.totalAttempts || 0;
             const accuracy = overall.accuracy || 0;
             const totalCorrect = overall.totalCorrect || 0;
