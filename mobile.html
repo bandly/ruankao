@@ -1194,7 +1194,10 @@
         }
 
         // 显示首页
-        function showHome() {
+        async function showHome() {
+            // 重新从服务器加载统计数据，确保显示最新数据
+            await loadStats();
+
             document.getElementById('bottomNav').style.display = 'none';
             const chapterTotal = Object.values(data.chapter_practice).reduce((s, a) => s + a.length, 0);
             let mockTotal = 0;

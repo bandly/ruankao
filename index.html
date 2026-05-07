@@ -1328,7 +1328,10 @@
         }
 
         // 显示欢迎页面
-        function showWelcome() {
+        async function showWelcome() {
+            // 重新从服务器加载统计数据，确保显示最新数据
+            await loadStats();
+
             // statsData 已经是用户层级的数据（从 API /api/stats?user=xxx 返回）
             const overall = statsData?.overall || {};
             const totalAttempts = overall.totalAttempts || 0;
