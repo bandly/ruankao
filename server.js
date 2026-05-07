@@ -67,8 +67,12 @@ app.get('/api/stats', async (req, res) => {
 
         // 返回指定用户的数据
         if (!stats.users) stats.users = {};
-        const userStats = stats.users[user] || { overall: {}, questions: {} };
-        res.json(userStats);
+        if (!stats.users[user]) stats.users[user] = { overall: {}, questions: {} };
+
+        // 确保 overall 统计是最新的
+        updateOverallStats(stats.users[user]);
+
+        res.json(stats.users[user]);
     } catch (err) {
         res.json({ overall: {}, questions: {} });
     }
