@@ -10,12 +10,23 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json({ limit: '10mb' })); // 增加限制以支持论文内容
 
 // 本地开发用文件存储，Vercel 用 Redis
-const redisUrl = process.env.ruankao_REDIS_URL;
+const redisUrl = process.env.ruankao_REDIS_URL || process.env.RUANKAO_REDIS_URL;
 const isLocal = !redisUrl;
 
 let redis = null;
 if (!isLocal) {
-    redis = new Redis(redisUrl);
+    redis = new Redis(redisUrl, {
+        maxRetriesPerRequest: 3,
+        retryDelayOnFailover: 100,
+        enableReadyCheck: false,
+        enableOfflineQueue: true
+    });
+    redis.on('error', (err) => {
+        console.error('Redis connection error:', err.message);
+    });
+    redis.on('connect', () => {
+        console.log('Redis connected successfully');
+    });
 }
 
 const DATA_DIR = path.join(__dirname, 'data');
