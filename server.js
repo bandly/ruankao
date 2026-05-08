@@ -1,7 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { Redis } = require('@upstash/redis');
+const Redis = require('ioredis');
 const { reviewEssay } = require('./essay_reviewer');
 
 const app = express();
@@ -9,15 +9,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json({ limit: '10mb' })); // 增加限制以支持论文内容
 
-// 本地开发用文件存储，Vercel 用 Upstash Redis
-const isLocal = !process.env.UPSTASH_URL;
+// 本地开发用文件存储，Vercel 用 Redis
+const redisUrl = process.env.ruankao_REDIS_URL;
+const isLocal = !redisUrl;
 
 let redis = null;
 if (!isLocal) {
-    redis = new Redis({
-        url: process.env.UPSTASH_URL,
-        token: process.env.UPSTASH_TOKEN
-    });
+    redis = new Redis(redisUrl);
 }
 
 const DATA_DIR = path.join(__dirname, 'data');
@@ -62,7 +60,8 @@ app.get('/api/stats', async (req, res) => {
             const data = fs.readFileSync(STATS_FILE, 'utf8');
             stats = JSON.parse(data);
         } else {
-            stats = await redis.get('stats') || { users: {} };
+            const data = await redis.get('stats');
+            stats = data ? JSON.parse(data) : { users: {} };
         }
 
         // 返回指定用户的数据
@@ -85,7 +84,7 @@ app.post('/api/stats', async (req, res) => {
         if (isLocal) {
             fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
         } else {
-            await redis.set('stats', stats);
+            await redis.set('stats', JSON.stringify(stats));
         }
         res.json({ success: true });
     } catch (err) {
@@ -105,7 +104,8 @@ app.post('/api/stats/question/:id', async (req, res) => {
             const data = fs.readFileSync(STATS_FILE, 'utf8');
             stats = JSON.parse(data);
         } else {
-            stats = await redis.get('stats') || { users: {} };
+            const data = await redis.get('stats');
+            stats = data ? JSON.parse(data) : { users: {} };
         }
 
         if (!stats.users) stats.users = {};
@@ -123,7 +123,7 @@ app.post('/api/stats/question/:id', async (req, res) => {
         if (isLocal) {
             fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
         } else {
-            await redis.set('stats', stats);
+            await redis.set('stats', JSON.stringify(stats));
         }
 
         res.json({ success: true, stats: stats.users[user] });
@@ -165,7 +165,8 @@ app.get('/api/stats/question/:id', async (req, res) => {
             const data = fs.readFileSync(STATS_FILE, 'utf8');
             stats = JSON.parse(data);
         } else {
-            stats = await redis.get('stats') || { users: {} };
+            const data = await redis.get('stats');
+            stats = data ? JSON.parse(data) : { users: {} };
         }
         res.json(stats.users?.[user]?.questions?.[questionId] || {});
     } catch (err) {
@@ -264,7 +265,8 @@ app.post('/api/essay/review', async (req, res) => {
             const data = fs.readFileSync(ESSAY_RECORDS_FILE, 'utf8');
             records = JSON.parse(data);
         } else {
-            records = await redis.get('essay_records') || { records: [] };
+            const data = await redis.get('essay_records');
+            records = data ? JSON.parse(data) : { records: [] };
         }
 
         records.records.unshift(record); // 新记录放在最前面
@@ -277,7 +279,7 @@ app.post('/api/essay/review', async (req, res) => {
         if (isLocal) {
             fs.writeFileSync(ESSAY_RECORDS_FILE, JSON.stringify(records, null, 2));
         } else {
-            await redis.set('essay_records', records);
+            await redis.set('essay_records', JSON.stringify(records));
         }
 
         res.json({ success: true, record, usage: review.usage });
@@ -296,7 +298,8 @@ app.get('/api/essay/records', async (req, res) => {
             const data = fs.readFileSync(ESSAY_RECORDS_FILE, 'utf8');
             records = JSON.parse(data);
         } else {
-            records = await redis.get('essay_records') || { records: [] };
+            const data = await redis.get('essay_records');
+            records = data ? JSON.parse(data) : { records: [] };
         }
         res.json({ success: true, records: records.records });
     } catch (err) {
@@ -314,7 +317,8 @@ app.delete('/api/essay/records/:id', async (req, res) => {
             const data = fs.readFileSync(ESSAY_RECORDS_FILE, 'utf8');
             records = JSON.parse(data);
         } else {
-            records = await redis.get('essay_records') || { records: [] };
+            const data = await redis.get('essay_records');
+            records = data ? JSON.parse(data) : { records: [] };
         }
 
         records.records = records.records.filter(r => r.id !== recordId);
@@ -322,7 +326,7 @@ app.delete('/api/essay/records/:id', async (req, res) => {
         if (isLocal) {
             fs.writeFileSync(ESSAY_RECORDS_FILE, JSON.stringify(records, null, 2));
         } else {
-            await redis.set('essay_records', records);
+            await redis.set('essay_records', JSON.stringify(records));
         }
 
         res.json({ success: true });
