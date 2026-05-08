@@ -1075,11 +1075,29 @@
             }
             html += '</div>';
 
-            // 模拟题
+            // 模拟题（排序）
             for (const examType of Object.keys(data.mock_exams)) {
                 html += `<div class="menu-section">
                     <div class="menu-title">${examType} <span class="menu-count">${Object.keys(data.mock_exams[examType]).length}套</span></div>`;
-                for (const examName of Object.keys(data.mock_exams[examType])) {
+                // 提取模拟试卷编号并排序
+                const examNames = Object.keys(data.mock_exams[examType]);
+                examNames.sort((a, b) => {
+                    // 提取括号内的编号，如"模拟试卷（一）"中的"一"
+                    const numMatchA = a.match(/模拟试卷[（(]([一二三四五六七八九十]+)[）)]/);
+                    const numMatchB = b.match(/模拟试卷[（(]([一二三四五六七八九十]+)[）)]/);
+                    if (numMatchA && numMatchB) {
+                        const chineseToNum = { '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
+                        return (chineseToNum[numMatchA[1]] || 0) - (chineseToNum[numMatchB[1]] || 0);
+                    }
+                    // 尝试匹配数字编号
+                    const digitMatchA = a.match(/模拟试卷[（(](\d+)[）)]/);
+                    const digitMatchB = b.match(/模拟试卷[（(](\d+)[）)]/);
+                    if (digitMatchA && digitMatchB) {
+                        return parseInt(digitMatchA[1]) - parseInt(digitMatchB[1]);
+                    }
+                    return a.localeCompare(b);
+                });
+                for (const examName of examNames) {
                     const count = data.mock_exams[examType][examName].length;
                     const shortName = examName.replace('2025年上半年系统架构设计师考试模拟试卷（', '').replace('）', '');
                     html += `<div class="submenu-item" onclick="startExam('${examType}', '${examName}')">

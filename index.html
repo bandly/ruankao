@@ -1194,7 +1194,25 @@
                 const examSubList = document.createElement('ul');
                 examSubList.className = 'sub-list';
                 examSubList.style.paddingLeft = '10px';
-                for (const examName of Object.keys(questionsData.mock_exams[examType])) {
+                // 提取模拟试卷编号并排序
+                const examNames = Object.keys(questionsData.mock_exams[examType]);
+                examNames.sort((a, b) => {
+                    // 提取括号内的编号，如"模拟试卷（一）"中的"一"
+                    const numMatchA = a.match(/模拟试卷[（(]([一二三四五六七八九十]+)[）)]/);
+                    const numMatchB = b.match(/模拟试卷[（(]([一二三四五六七八九十]+)[）)]/);
+                    if (numMatchA && numMatchB) {
+                        const chineseToNum = { '一': 1, '二': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10 };
+                        return (chineseToNum[numMatchA[1]] || 0) - (chineseToNum[numMatchB[1]] || 0);
+                    }
+                    // 尝试匹配数字编号
+                    const digitMatchA = a.match(/模拟试卷[（(](\d+)[）)]/);
+                    const digitMatchB = b.match(/模拟试卷[（(](\d+)[）)]/);
+                    if (digitMatchA && digitMatchB) {
+                        return parseInt(digitMatchA[1]) - parseInt(digitMatchB[1]);
+                    }
+                    return a.localeCompare(b);
+                });
+                for (const examName of examNames) {
                     const examItem = document.createElement('li');
                     examItem.className = 'sub-item';
                     examItem.style.fontSize = '0.8em';
