@@ -44,6 +44,170 @@ const getQuestionField = (qid) => `q:${qid}`;
 const VIDEO_BASE_PATH = '/Users/bandly/Documents/视频课程/0.希塞2505/1.【新版】系统架构设计师精讲班视频教程';
 app.use('/videos', express.static(VIDEO_BASE_PATH));
 
+// 视频搜索API
+const VIDEO_KEYWORDS_FILE = path.join(__dirname, 'video_keywords_manual.json');
+const TRANSCRIPTS_DIR = path.join(__dirname, 'data/transcripts');
+
+app.get('/api/videos/search', (req, res) => {
+    try {
+        const keyword = req.query.q || '';
+        if (!keyword || keyword.length < 1) {
+            return res.json({ success: true, videos: [] });
+        }
+
+        // 加载视频关键词索引
+        let keywordsIndex = [];
+        if (fs.existsSync(VIDEO_KEYWORDS_FILE)) {
+            keywordsIndex = JSON.parse(fs.readFileSync(VIDEO_KEYWORDS_FILE, 'utf8'));
+        }
+
+        // 加载转写文件
+        let transcripts = [];
+        if (fs.existsSync(TRANSCRIPTS_DIR)) {
+            for (const filename of fs.readdirSync(TRANSCRIPTS_DIR)) {
+                if (filename.endsWith('.json')) {
+                    const filepath = path.join(TRANSCRIPTS_DIR, filename);
+                    const data = JSON.parse(fs.readFileSync(filepath, 'utf8'));
+                    transcripts.push({
+                        name: data.video_name || filename.replace('.json', ''),
+                        path: data.video_path || '',
+                        chapter: data.chapter || '',
+                        transcript: data.transcript || ''
+                    });
+                }
+            }
+        }
+
+        // 搜索
+        const keywordLower = keyword.toLowerCase();
+        const results = [];
+
+        // 先从关键词索引搜索（精确匹配）
+        for (const video of keywordsIndex) {
+            const videoKeywords = (video.keywords || []).map(k => k.toLowerCase());
+            const matchScore = videoKeywords.some(k => k.includes(keywordLower) || keywordLower.includes(k));
+            if (matchScore) {
+                // 查找完整路径
+                const transcript = transcripts.find(t => t.name === video.video_name);
+                results.push({
+                    name: video.video_name,
+                    path: transcript?.path || '',
+                    chapter: transcript?.chapter || '',
+                    keywords: video.keywords,
+                    matchType: 'keyword',
+                    score: 20
+                });
+            }
+        }
+
+        // 从视频名称和转写文本搜索
+        for (const t of transcripts) {
+            if (results.find(r => r.name === t.name)) continue; // 已在关键词结果中
+
+            const nameMatch = t.name.toLowerCase().includes(keywordLower);
+            const transcriptMatch = t.transcript && t.transcript.toLowerCase().includes(keywordLower);
+
+            if (nameMatch || transcriptMatch) {
+                results.push({
+                    name: t.name,
+                    path: t.path,
+                    chapter: t.chapter,
+                    keywords: [],
+                    matchType: nameMatch ? 'name' : 'transcript',
+                    score: nameMatch ? 15 : 10
+                });
+            }
+        }
+
+        // 按分数排序
+        results.sort((a, b) => b.score - a.score);
+
+        res.json({ success: true, videos: results.slice(0, 20), total: results.length });
+    } catch (err) {
+        console.error('Video search error:', err);
+        res.json({ success: true, videos: [], total: 0 });
+    }
+});
+
+// 保存视频关联到题目
+app.post('/api/questions/video', (req, res) => {
+    try {
+        const { questionId, videoPath, videoName } = req.body;
+        if (!questionId || !videoPath) {
+            return res.status(400).json({ success: false, error: '缺少参数' });
+        }
+
+        // 加载题目数据
+        const questionsFile = path.join(__dirname, 'questions_data.json');
+        const questionsData = JSON.parse(fs.readFileSync(questionsFile, 'utf8'));
+
+        // 找到题目并更新
+        let found = false;
+        for (const chapter of Object.keys(questionsData.chapter_practice || {})) {
+            const questions = questionsData.chapter_practice[chapter];
+            for (const q of questions) {
+                if (q.id === questionId) {
+                    // 添加或更新 user_video_links
+                    if (!q.user_video_links) q.user_video_links = [];
+
+                    // 检查是否已存在
+                    const exists = q.user_video_links.find(v => v.path === videoPath);
+                    if (!exists) {
+                        q.user_video_links.unshift({
+                            title: videoName,
+                            path: videoPath,
+                            addedAt: new Date().toISOString(),
+                            addedBy: 'user'
+                        });
+                    }
+                    found = true;
+                    break;
+                }
+            }
+            if (found) break;
+        }
+
+        // 也检查模拟题
+        if (!found) {
+            for (const examType of Object.keys(questionsData.mock_exams || {})) {
+                for (const examName of Object.keys(questionsData.mock_exams[examType] || {})) {
+                    const questions = questionsData.mock_exams[examType][examName];
+                    for (const q of questions) {
+                        if (q.id === questionId) {
+                            if (!q.user_video_links) q.user_video_links = [];
+                            const exists = q.user_video_links.find(v => v.path === videoPath);
+                            if (!exists) {
+                                q.user_video_links.unshift({
+                                    title: videoName,
+                                    path: videoPath,
+                                    addedAt: new Date().toISOString(),
+                                    addedBy: 'user'
+                                });
+                            }
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (found) break;
+                }
+                if (found) break;
+            }
+        }
+
+        if (!found) {
+            return res.status(404).json({ success: false, error: '题目不存在' });
+        }
+
+        // 保存
+        fs.writeFileSync(questionsFile, JSON.stringify(questionsData, null, 2));
+
+        res.json({ success: true, message: '视频已关联到题目' });
+    } catch (err) {
+        console.error('Save video error:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 app.get('/api/video/:path', (req, res) => {
     try {
         const videoPath = req.params.path;

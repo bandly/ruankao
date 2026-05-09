@@ -1207,6 +1207,113 @@
                 video.style.display = 'none';
                 document.getElementById('videoError').style.display = 'block';
             };
+        }
+
+        // 当前要关联视频的题目ID
+        let currentQuestionIdForVideo = null;
+
+        // 显示视频搜索弹窗
+        function showVideoSearch(questionId) {
+            currentQuestionIdForVideo = questionId;
+
+            // 创建搜索弹窗
+            const modal = document.createElement('div');
+            modal.id = 'videoSearchModal';
+            modal.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; z-index: 1001;';
+            modal.innerHTML = `
+                <div style="width: 95%; max-width: 400px; background: #fff; border-radius: 12px; overflow: hidden;">
+                    <div style="background: linear-gradient(135deg, #667eea, #764ba2); padding: 16px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="color: #fff; font-size: 16px; font-weight: 600;">🔍 搜索视频</div>
+                        <button onclick="document.getElementById('videoSearchModal').remove()" style="background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer;">关闭</button>
+                    </div>
+                    <div style="padding: 16px;">
+                        <input type="text" id="videoSearchInput" placeholder="输入关键词搜索视频..."
+                               style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                               onkeyup="if(event.key==='Enter') searchVideos()">
+                        <button onclick="searchVideos()" style="width: 100%; margin-top: 10px; padding: 12px; background: #667eea; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer;">
+                            搜索
+                        </button>
+                        <div id="videoSearchResults" style="margin-top: 16px; max-height: 300px; overflow-y: auto;"></div>
+                    </div>
+                    <div style="padding: 12px; background: #f5f5f5; text-align: center; font-size: 12px; color: #666;">
+                        提示：输入知识点关键词如"规范化"、"BI"、"ERP"等
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            // 自动聚焦输入框
+            setTimeout(() => document.getElementById('videoSearchInput').focus(), 100);
+        }
+
+        // 搜索视频
+        function searchVideos() {
+            const keyword = document.getElementById('videoSearchInput').value.trim();
+            const resultsDiv = document.getElementById('videoSearchResults');
+
+            if (!keyword) {
+                resultsDiv.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">请输入关键词</div>';
+                return;
+            }
+
+            resultsDiv.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">搜索中...</div>';
+
+            // 调用API搜索
+            fetch(`/api/videos/search?q=${encodeURIComponent(keyword)}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success || !data.videos.length) {
+                        resultsDiv.innerHTML = `<div style="text-align: center; color: #999; padding: 20px;">
+                            未找到匹配视频，请尝试其他关键词
+                            <div style="margin-top: 10px; font-size: 12px;">已搜索 ${data.total || 0} 个视频</div>
+                        </div>`;
+                        return;
+                    }
+
+                    resultsDiv.innerHTML = `<div style="font-size: 12px; color: #666; margin-bottom: 10px;">找到 ${data.videos.length} 个视频：</div>` +
+                        data.videos.map(v => `
+                            <div style="padding: 10px; background: #f9f9f9; border-radius: 8px; margin-bottom: 8px; cursor: pointer;" onclick="selectVideo('${v.path}', '${v.name}')">
+                                <div style="font-size: 14px; color: #333; font-weight: 500;">📹 ${v.name}</div>
+                                <div style="font-size: 11px; color: #666; margin-top: 4px;">${v.chapter || ''}</div>
+                                ${v.keywords && v.keywords.length ? `<div style="font-size: 11px; color: #ff9800; margin-top: 4px;">关键词: ${v.keywords.slice(0, 5).join(', ')}</div>` : ''}
+                            </div>
+                        `).join('');
+                })
+                .catch(err => {
+                    resultsDiv.innerHTML = '<div style="text-align: center; color: #f44336; padding: 20px;">搜索失败，请重试</div>';
+                });
+        }
+
+        // 选择视频并关联到题目
+        function selectVideo(videoPath, videoName) {
+            if (!currentQuestionIdForVideo) return;
+
+            // 保存关联
+            fetch('/api/questions/video', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    questionId: currentQuestionIdForVideo,
+                    videoPath: videoPath,
+                    videoName: videoName
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    // 关闭搜索弹窗
+                    document.getElementById('videoSearchModal').remove();
+                    // 提示成功
+                    alert('✅ 视频已关联到题目！刷新页面后生效');
+                    // 刷新页面
+                    location.reload();
+                } else {
+                    alert('❌ 保存失败：' + data.error);
+                }
+            })
+            .catch(err => {
+                alert('❌ 保存失败，请重试');
+            });
 
             modal.onclick = (e) => { if (e.target === modal) modal.remove(); };
         }
@@ -1541,18 +1648,27 @@
             html += `<div class="answer-box ${isSubmitted ? '' : 'hidden'}">
                 <div class="answer-title">正确答案: ${q.answer}</div>
                 ${q.analysis ? `<div class="analysis-title">试题解析</div><div class="analysis-content">${formatAnalysis(q.analysis)}</div>` : ''}
-                ${q.video_links && q.video_links.length > 0 ? `
+                ${(q.video_links && q.video_links.length > 0) || (q.user_video_links && q.user_video_links.length > 0) ? `
                     <div class="analysis-title" style="color: #ff9800;">🎬 相关视频</div>
                     <div class="analysis-content" style="background: #fff3e0; border-left-color: #ff9800;">
-                        ${q.video_links.slice(0, 3).map(v => {
+                        ${((q.user_video_links || []).concat(q.video_links || [])).slice(0, 5).map(v => {
                             const videoName = v.title.split('/').pop().replace('.mp4', '');
+                            const isUserAdded = v.addedBy === 'user';
                             return `<div style="margin: 3px 0;">
                                 <a href="#" onclick="openVideo('${v.path}', '${videoName}'); return false;"
                                    style="color: #ff9800; text-decoration: underline;">📹 ${videoName}</a>
+                                ${isUserAdded ? '<span style="color: #4caf50; font-size: 12px;"> ✓已添加</span>' : ''}
                             </div>`;
                         }).join('')}
+                        <button onclick="showVideoSearch('${q.id}')" style="margin-top: 8px; padding: 6px 12px; background: #667eea; color: white; border: none; border-radius: 6px; font-size: 13px; cursor: pointer;">➕ 添加视频</button>
                     </div>
-                ` : ''}
+                ` : `
+                    <div class="analysis-title" style="color: #ff9800;">🎬 相关视频</div>
+                    <div class="analysis-content" style="background: #fff3e0; border-left-color: #ff9800; text-align: center; color: #999;">
+                        暂无关联视频
+                        <button onclick="showVideoSearch('${q.id}')" style="margin-top: 8px; padding: 6px 12px; background: #667eea; color: white; border: none; border-radius: 6px; font-size: 13px; cursor: pointer;">➕ 添加视频</button>
+                    </div>
+                `}
             </div>`;
 
             return html;
