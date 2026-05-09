@@ -225,6 +225,7 @@ app.get('/api/stats', async (req, res) => {
         const key = getUserKey(user);
 
         let questions = {};
+        let chapters = {};
         let overall = { totalAttempts: 0, totalCorrect: 0, totalWrong: 0, accuracy: 0 };
 
         if (isLocal) {
@@ -232,6 +233,7 @@ app.get('/api/stats', async (req, res) => {
             const stats = JSON.parse(data);
             if (stats.users?.[user]) {
                 questions = stats.users[user].questions || {};
+                chapters = stats.users[user].chapters || {};
                 overall = stats.users[user].overall || overall;
             }
         } else {
@@ -243,6 +245,9 @@ app.get('/api/stats', async (req, res) => {
                 } else if (field.startsWith('q:')) {
                     const qid = field.slice(2);
                     questions[qid] = JSON.parse(value);
+                } else if (field.startsWith('chapter:')) {
+                    const chapterName = field.slice(8);
+                    chapters[chapterName] = JSON.parse(value);
                 }
             }
         }
@@ -250,10 +255,10 @@ app.get('/api/stats', async (req, res) => {
         // 确保 overall 统计是最新的
         updateOverallStats({ questions, overall });
 
-        res.json({ overall, questions });
+        res.json({ overall, questions, chapters });
     } catch (err) {
         console.error('Stats error:', err);
-        res.json({ overall: {}, questions: {} });
+        res.json({ overall: {}, questions: {}, chapters: {} });
     }
 });
 
@@ -261,13 +266,14 @@ app.get('/api/stats', async (req, res) => {
 app.post('/api/stats/question/:id', async (req, res) => {
     try {
         const questionId = req.params.id;
-        const record = req.body;
+        const { isCorrect, chapter, examType, examName } = req.body;
         const user = req.query.user || DEFAULT_USER;
         const key = getUserKey(user);
         const field = getQuestionField(questionId);
+        const now = new Date().toISOString();
 
         // 获取现有记录
-        let existing = { attempts: 0, correctCount: 0, wrongCount: 0 };
+        let existing = { attempts: 0, correctCount: 0, wrongCount: 0, history: [] };
         if (isLocal) {
             const data = fs.readFileSync(STATS_FILE, 'utf8');
             const stats = JSON.parse(data);
@@ -277,23 +283,51 @@ app.post('/api/stats/question/:id', async (req, res) => {
             if (data) existing = JSON.parse(data);
         }
 
-        // 更新记录
+        // 更新记录 - 增加详细历史
+        const history = existing.history || [];
+        history.unshift({ time: now, result: isCorrect ? 'correct' : 'wrong' });
+        // 保留最近20次历史记录
+        if (history.length > 20) history.pop();
+
         const updated = {
             attempts: existing.attempts + 1,
-            correctCount: existing.correctCount + (record.correctCount > existing.correctCount ? 1 : 0),
-            wrongCount: existing.wrongCount + (record.wrongCount > existing.wrongCount ? 1 : 0),
-            lastUpdate: new Date().toISOString()
+            correctCount: existing.correctCount + (isCorrect ? 1 : 0),
+            wrongCount: existing.wrongCount + (isCorrect ? 0 : 1),
+            lastUpdate: now,
+            lastResult: isCorrect ? 'correct' : 'wrong',
+            history
         };
 
         if (isLocal) {
             const data = fs.readFileSync(STATS_FILE, 'utf8');
             const stats = JSON.parse(data);
             if (!stats.users) stats.users = {};
-            if (!stats.users[user]) stats.users[user] = { overall: {}, questions: {} };
+            if (!stats.users[user]) stats.users[user] = { overall: {}, questions: {}, chapters: {} };
             stats.users[user].questions[questionId] = updated;
 
+            // 更新章节进度
+            if (chapter) {
+                if (!stats.users[user].chapters) stats.users[user].chapters = {};
+                const chapterStats = stats.users[user].chapters[chapter] || { attempted: 0, correct: 0, wrong: 0 };
+                chapterStats.attempted += 1;
+                chapterStats.correct += isCorrect ? 1 : 0;
+                chapterStats.wrong += isCorrect ? 0 : 1;
+                chapterStats.lastUpdate = now;
+                stats.users[user].chapters[chapter] = chapterStats;
+            }
+
+            // 更新 overall - 记录上次刷题位置
             updateOverallStats(stats.users[user]);
-            stats.users[user].overall.lastUpdate = new Date().toISOString();
+            stats.users[user].overall.lastUpdate = now;
+            if (chapter) {
+                stats.users[user].overall.lastChapter = chapter;
+                stats.users[user].overall.lastExamType = null;
+                stats.users[user].overall.lastExamName = null;
+            } else if (examType && examName) {
+                stats.users[user].overall.lastChapter = null;
+                stats.users[user].overall.lastExamType = examType;
+                stats.users[user].overall.lastExamName = examName;
+            }
 
             fs.writeFileSync(STATS_FILE, JSON.stringify(stats, null, 2));
             res.json({ success: true, stats: stats.users[user] });
@@ -301,20 +335,35 @@ app.post('/api/stats/question/:id', async (req, res) => {
             // 只更新单个题目 field，速度快
             await redis.hset(key, field, JSON.stringify(updated));
 
+            // 更新章节进度
+            if (chapter) {
+                const chapterField = `chapter:${chapter}`;
+                const existingChapter = await redis.hget(key, chapterField);
+                const chapterStats = existingChapter ? JSON.parse(existingChapter) : { attempted: 0, correct: 0, wrong: 0 };
+                chapterStats.attempted += 1;
+                chapterStats.correct += isCorrect ? 1 : 0;
+                chapterStats.wrong += isCorrect ? 0 : 1;
+                chapterStats.lastUpdate = now;
+                await redis.hset(key, chapterField, JSON.stringify(chapterStats));
+            }
+
             // 异步更新 overall，并等待结果返回
-            const overall = await updateOverallStatsAsync(user);
+            const overall = await updateOverallStatsAsync(user, chapter, examType, examName);
 
             // 返回完整的 stats（与本地模式格式一致）
             // 获取当前所有题目记录
             const allData = await redis.hgetall(key);
             const questions = {};
+            const chapters = {};
             for (const [f, v] of Object.entries(allData)) {
                 if (f.startsWith('q:')) {
                     questions[f.slice(2)] = JSON.parse(v);
+                } else if (f.startsWith('chapter:')) {
+                    chapters[f.slice(8)] = JSON.parse(v);
                 }
             }
 
-            res.json({ success: true, stats: { overall, questions } });
+            res.json({ success: true, stats: { overall, questions, chapters } });
         }
     } catch (err) {
         console.error('Update error:', err);
@@ -323,7 +372,7 @@ app.post('/api/stats/question/:id', async (req, res) => {
 });
 
 // 异步更新 overall 统计
-async function updateOverallStatsAsync(user) {
+async function updateOverallStatsAsync(user, chapter, examType, examName) {
     const key = getUserKey(user);
     const allData = await redis.hgetall(key);
 
@@ -343,7 +392,10 @@ async function updateOverallStatsAsync(user) {
         totalCorrect,
         totalWrong,
         accuracy: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0,
-        lastUpdate: new Date().toISOString()
+        lastUpdate: new Date().toISOString(),
+        lastChapter: chapter,
+        lastExamType: examType,
+        lastExamName: examName
     };
 
     await redis.hset(key, 'overall', JSON.stringify(overall));
@@ -361,12 +413,16 @@ function updateOverallStats(userStats) {
         totalWrong += q.wrongCount || 0;
     }
 
+    const existingOverall = userStats.overall || {};
     userStats.overall = {
         totalAttempts,
         totalCorrect,
         totalWrong,
         accuracy: totalAttempts > 0 ? Math.round((totalCorrect / totalAttempts) * 100) : 0,
-        lastUpdate: new Date().toISOString()
+        lastUpdate: new Date().toISOString(),
+        lastChapter: existingOverall.lastChapter,
+        lastExamType: existingOverall.lastExamType,
+        lastExamName: existingOverall.lastExamName
     };
 }
 

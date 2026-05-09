@@ -4343,7 +4343,7 @@
         "number": 9,
         "id": "60123533",
         "type": "multi_choice",
-        "content": "前趋图是一个有向无环图，记为→=｛（Pi,Pj）pi完成时间先于Pj开始时间｝。假设系统中进程P=｛P1，P2，P3，P4，P5，P6，P7，P8｝，且进程的前趋图如下：",
+        "content": "前趋图是一个有向无环图，记为→=｛（Pi,Pj）pi完成时间先于Pj开始时间｝。假设系统中进程P=｛P1，P2，P3，P4，P5，P6，P7，P8｝，且进程的前趋图如下所示：<br><img src=\"images/aHF9YYz7Vz.png\" style=\"max-width:100%\"><br><br>（1）该前趋图的前驱关系集合→为（）；<br>（2）关于该前趋图的描述，正确的是（）。",
         "image": "images/aHF9YYz7Vz.png",
         "options": [
           [
@@ -10429,7 +10429,7 @@
           "number": 13,
           "id": "60428676",
           "type": "multi_choice",
-          "content": "某项目含12个作业A~L，每个作业的紧前作业以及需要持续的时间如下表：",
+          "content": "某项目含12个作业A~L，每个作业的紧前作业以及需要持续的时间如下表所示：<br><img src=\"images/U7FKtdqVDe.png\" style=\"max-width:100%\"><br><br>（1）该项目的关键路径长度为（）天；<br>（2）作业J的松弛时间为（）天。",
           "image": "images/U7FKtdqVDe.png",
           "options": [
             [
@@ -18223,7 +18223,7 @@
           "number": 4,
           "id": "60173480",
           "type": "multi_choice",
-          "content": "进程P1、P2、P3、P4、P5和P6的前趋图如下所示：",
+          "content": "进程P1、P2、P3、P4、P5和P6的前趋图如下所示：<br><img src=\"images/60173480.png\" style=\"max-width:100%\"><br><br>假设信号量S1、S2、S3、S4、S5、S6、S7的初值均为0，用PV操作控制这6个进程的同步与互斥。图中①、②、③、④、⑤、⑥处分别应填入的PV操作为：<br>（1）①处应填入（）；<br>（2）③处应填入（）；<br>（3）⑥处应填入（）。",
           "image": "images/60173480.png",
           "options": [
             [
@@ -23584,7 +23584,7 @@
           "number": 1,
           "id": "60015987",
           "type": "multi_choice",
-          "content": "假设磁盘上每个磁道划分成10个物理块，每块存放1个逻辑记录。逻辑记录R0，R1，...，R9存放在同一个磁道上，记录的安排顺序如下表所示：",
+          "content": "假设磁盘上每个磁道划分成10个物理块，每块存放1个逻辑记录。逻辑记录R0，R1，...，R9存放在同一个磁道上，记录的安排顺序如下表所示：<br><img src=\"images/6TjuRXXz9T.png\" style=\"max-width:100%\"><br><br>假定磁盘旋转速度为20ms/周，系统每读出一个记录后需要4ms进行处理。则：<br>（1）处理这10个记录的总时间为（）ms；<br>（2）若对信息进行优化分布，使得处理10个记录的总时间为最少，则最少时间为（）ms。",
           "image": "images/6TjuRXXz9T.png",
           "options": [
             [

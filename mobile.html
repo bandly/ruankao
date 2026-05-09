@@ -134,6 +134,21 @@
             color: #1976d2;
         }
 
+        .tag.success {
+            background: #e8f5e9;
+            color: #4caf50;
+        }
+
+        .tag.danger {
+            background: #ffebee;
+            color: #f44336;
+        }
+
+        .tag.stats {
+            background: #fff3e0;
+            color: #ff9800;
+        }
+
         .question-content {
             font-size: 16px;
             line-height: 1.7;
@@ -539,6 +554,37 @@
             background: #f5f5f5;
         }
 
+        /* 上次刷题标记 */
+        .last-badge {
+            background: #ff9800;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-right: 8px;
+        }
+
+        .last-badge-mini {
+            color: #ff9800;
+            font-size: 11px;
+            margin-right: 4px;
+        }
+
+        /* 进度迷你条 */
+        .progress-mini {
+            width: 50px;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-right: 8px;
+            overflow: hidden;
+        }
+
+        .progress-mini-fill {
+            height: 100%;
+            border-radius: 2px;
+        }
+
         /* 首页统计 */
         .home-stats {
             padding: 16px;
@@ -891,6 +937,9 @@
         let correctCount = 0;
         let wrongCount = 0;
         let currentQId = null;
+        let currentChapter = null;  // 当前章节
+        let currentExamType = null;  // 当前模拟题类型
+        let currentExamName = null;  // 当前模拟卷名
 
         // 用户名（登录后设置）
         let currentUser = sessionStorage.getItem('ruankao_user') || '';
@@ -930,9 +979,10 @@
             try {
                 const existing = statsData.questions?.[qId] || { attempts: 0, correctCount: 0, wrongCount: 0 };
                 const record = {
-                    attempts: existing.attempts + 1,
-                    correctCount: existing.correctCount + (isCorrect ? 1 : 0),
-                    wrongCount: existing.wrongCount + (isCorrect ? 0 : 1)
+                    isCorrect,
+                    chapter: currentChapter,
+                    examType: currentExamType,
+                    examName: currentExamName
                 };
 
                 const response = await fetch(`/api/stats/question/${qId}?user=${currentUser}`, {
@@ -1055,6 +1105,9 @@
         // 渲染侧边栏（章节排序）
         function renderSidebar() {
             const content = document.getElementById('sidebarContent');
+            const lastChapter = statsData?.overall?.lastChapter || '';
+            const chaptersProgress = statsData?.chapters || {};
+
             let html = `<div class="menu-section">
                 <div class="menu-title">章节练习 <span class="menu-count">${Object.keys(data.chapter_practice).length}</span></div>`;
 
@@ -1068,14 +1121,28 @@
 
             for (const chapter of chapters) {
                 const count = data.chapter_practice[chapter].length;
+                const progress = chaptersProgress[chapter] || {};
+                const attempted = progress.attempted || 0;
+                const isLast = chapter === lastChapter;
+                const completed = attempted >= count;
+
+                // 计算进度条宽度
+                const progressWidth = Math.min(100, (attempted / count) * 100);
+                const progressColor = completed ? '#4caf50' : 'linear-gradient(90deg, #667eea, #764ba2)';
+
                 html += `<div class="menu-item" onclick="startChapter('${chapter}')">
-                    <span>${chapter}</span>
+                    <span style="flex:1">${chapter}</span>
+                    ${isLast ? '<span class="last-badge">上次</span>' : ''}
+                    ${attempted > 0 ? `<span class="progress-mini"><span class="progress-mini-fill" style="width:${progressWidth}px;background:${progressColor}"></span></span>` : ''}
                     <span class="count">${count}题</span>
                 </div>`;
             }
             html += '</div>';
 
             // 模拟题（排序）
+            const lastExamType = statsData?.overall?.lastExamType || '';
+            const lastExamName = statsData?.overall?.lastExamName || '';
+
             for (const examType of Object.keys(data.mock_exams)) {
                 html += `<div class="menu-section">
                     <div class="menu-title">${examType} <span class="menu-count">${Object.keys(data.mock_exams[examType]).length}套</span></div>`;
@@ -1100,7 +1167,9 @@
                 for (const examName of examNames) {
                     const count = data.mock_exams[examType][examName].length;
                     const shortName = examName.replace('2025年上半年系统架构设计师考试模拟试卷（', '').replace('）', '');
+                    const isLast = examType === lastExamType && examName === lastExamName;
                     html += `<div class="submenu-item" onclick="startExam('${examType}', '${examName}')">
+                        ${isLast ? '<span class="last-badge-mini">上次</span>' : ''}
                         ${shortName} (${count}题)
                     </div>`;
                 }
@@ -1492,6 +1561,9 @@
         // 从错题开始练习（使用错题列表作为题目来源）
         function startWrongQuestionPractice(index) {
             if (!window.wrongQuestionsList || window.wrongQuestionsList.length === 0) return;
+            currentChapter = null;
+            currentExamType = null;
+            currentExamName = null;
             currentQuestions = window.wrongQuestionsList;
             currentIndex = index;
             userAnswers = {};
@@ -1507,6 +1579,9 @@
             for (const [chapter, questions] of Object.entries(data.chapter_practice)) {
                 const index = questions.findIndex(q => q.id === questionId);
                 if (index !== -1) {
+                    currentChapter = chapter;
+                    currentExamType = null;
+                    currentExamName = null;
                     currentQuestions = questions;
                     currentIndex = index;
                     userAnswers = {};
@@ -1537,6 +1612,9 @@
         // 开始章节练习
         function startChapter(chapter) {
             closeSidebar();
+            currentChapter = chapter;
+            currentExamType = null;
+            currentExamName = null;
             currentQuestions = data.chapter_practice[chapter];
             currentIndex = 0;
             userAnswers = {};
@@ -1549,6 +1627,9 @@
         // 开始模拟题
         function startExam(examType, examName) {
             closeSidebar();
+            currentChapter = null;
+            currentExamType = examType;
+            currentExamName = examName;
             currentQuestions = data.mock_exams[examType][examName];
             currentIndex = 0;
             userAnswers = {};
@@ -1570,6 +1651,11 @@
             currentQId = q.id;
             const isSubmitted = submittedAnswers[q.id];
 
+            // 获取题目统计信息
+            const qStats = statsData?.questions?.[q.id] || {};
+            const attempts = qStats.attempts || 0;
+            const lastResult = qStats.lastResult || '';
+
             let html = `
                 <div class="progress-bar">
                     <span class="progress-text">${currentIndex + 1}/${currentQuestions.length}</span>
@@ -1581,6 +1667,8 @@
                 <div class="question-card">
                     <div class="question-header">
                         <span class="question-num">第${q.number}题 [${q.id}]</span>
+                        ${attempts > 0 ? `<span class="tag stats">刷${attempts}次</span>` : ''}
+                        ${lastResult ? `<span class="tag ${lastResult === 'correct' ? 'success' : 'danger'}">上次${lastResult === 'correct' ? '✓' : '✗'}</span>` : ''}
                         ${q.knowledge_point ? `<span class="tag knowledge">${q.knowledge_point.split('>')[0]}</span>` : ''}
                         ${q.pass_rate ? `<span class="tag">通过率${q.pass_rate}</span>` : ''}
                     </div>
