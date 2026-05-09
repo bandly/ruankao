@@ -1881,14 +1881,32 @@
             document.getElementById(`answer-${qId}`).classList.remove('hidden');
         }
 
-        // 显示案例分析答案
-        function showCaseAnswer(qId) {
+        // 显示案例分析答案（并记录统计）
+        async function showCaseAnswer(qId) {
             document.getElementById(`answer-${qId}`).classList.remove('hidden');
+
+            // 记录为"已查看"，暂时标记为正确（主观题用户自行判断）
+            const hasRecorded = submittedAnswers[qId];
+            if (!hasRecorded) {
+                submittedAnswers[qId] = true;
+                answeredCount++;
+                // 案例分析题记录为已查看，默认标记为正确（用户可自行复习）
+                await saveQuestionRecord(qId, true);
+            }
         }
 
-        // 显示论文范文
-        function showEssayAnswer(qId) {
+        // 显示论文范文（并记录统计）
+        async function showEssayAnswer(qId) {
             document.getElementById(`answer-${qId}`).classList.remove('hidden');
+
+            // 记录为"已查看"
+            const hasRecorded = submittedAnswers[qId];
+            if (!hasRecorded) {
+                submittedAnswers[qId] = true;
+                answeredCount++;
+                // 论文题记录为已查看，默认标记为正确
+                await saveQuestionRecord(qId, true);
+            }
         }
 
         // 上一题

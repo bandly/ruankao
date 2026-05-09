@@ -301,11 +301,20 @@ app.post('/api/stats/question/:id', async (req, res) => {
             // 只更新单个题目 field，速度快
             await redis.hset(key, field, JSON.stringify(updated));
 
-            // 异步更新 overall（不阻塞响应）
-            updateOverallStatsAsync(user).catch(err => console.error('Overall update error:', err));
+            // 异步更新 overall，并等待结果返回
+            const overall = await updateOverallStatsAsync(user);
 
-            // 返回预估的 stats（前端可以用）
-            res.json({ success: true, record: updated });
+            // 返回完整的 stats（与本地模式格式一致）
+            // 获取当前所有题目记录
+            const allData = await redis.hgetall(key);
+            const questions = {};
+            for (const [f, v] of Object.entries(allData)) {
+                if (f.startsWith('q:')) {
+                    questions[f.slice(2)] = JSON.parse(v);
+                }
+            }
+
+            res.json({ success: true, stats: { overall, questions } });
         }
     } catch (err) {
         console.error('Update error:', err);
@@ -338,6 +347,7 @@ async function updateOverallStatsAsync(user) {
     };
 
     await redis.hset(key, 'overall', JSON.stringify(overall));
+    return overall;
 }
 
 // 更新总体统计（本地模式）

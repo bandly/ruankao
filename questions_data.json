@@ -603,7 +603,7 @@
         "id": "60428708",
         "type": "multi_choice",
         "content": "数据安全治理的目标主要包括（ ）三个方面。数据安全治理体系是组织达成数据安全治理目标需要具备的能力框架，其中数据分类分级属于该体系中的（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2024-11/686/exn3AswN6S.png",
+        "image": "images/exn3AswN6S.png",
         "options": [
           [
             {
@@ -1396,7 +1396,7 @@
         "id": "3362",
         "type": "choice",
         "content": "对于下图所示的系统，图中数字是各器件可靠性，整个系统的可靠性近似为（）。",
-        "image": "https://lstatic.xisaiwang.com/tiku/UploadFiles/2010-9/98_452644.jpg",
+        "image": "images/98_452644.jpg",
         "options": [
           [
             {
@@ -2070,7 +2070,7 @@
         "id": "60418008",
         "type": "choice",
         "content": "以下关于测试的说法，正确的是（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2024-04/46/e7KZKCqZpj.png",
+        "image": "images/e7KZKCqZpj.png",
         "options": [
           [
             {
@@ -3258,7 +3258,7 @@
         "id": "352082",
         "type": "multi_choice",
         "content": "给定关系模式R（U，F），其中：属性集U={A1，A2，A3，A4，A5，A6}，函数依赖集F={A1→A2， A1→A3，A3→A4，A1A5→A6}。关系模式R的候选码为（ ），由于R存在非主属性对码的部分函数依赖，所以R属于（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2023-05/948/Ap95eP8wkY.png",
+        "image": "images/Ap95eP8wkY.png",
         "options": [
           [
             {
@@ -3332,7 +3332,7 @@
         "id": "418836",
         "type": "multi_choice",
         "content": "系统中有三个事务T1、T2、T3分别对数据R1和R2进行操作，其中R1和R2的初值R1=120、R2=50。假设事务T1、T2、T3操作的情况如下图所示，图中T1与T2间并发操作（ ） 问题，T2与T3间并发操作（ ） 问题。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2024-09/228/kmJmryMg6R.png",
+        "image": "images/kmJmryMg6R.png",
         "options": [
           [
             {
@@ -3705,7 +3705,7 @@
         "id": "60371892",
         "type": "multi_choice",
         "content": "若关系R、S如下表所示，则关系R与S进行自然连接运算后的属性列数和元组个数分别为（ ），关系代数表达式 π1,5( σ2<5(R×S))与关系代数表达式（ ）等价。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2023-08/762/S8WjHXRVc7.png",
+        "image": "images/S8WjHXRVc7.png",
         "options": [
           [
             {
@@ -4041,7 +4041,7 @@
         "id": "60122984",
         "type": "choice",
         "content": "以下关于复杂指令集计算机（Complex Instruction Set Computer, CISC）和精简指令系统计算机（RISC）的叙述中，正确的是（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2023-02/210/DMSwchGcC8.png",
+        "image": "images/DMSwchGcC8.png",
         "options": [
           [
             {
@@ -4203,7 +4203,7 @@
         "id": "20994400",
         "type": "multi_choice",
         "content": "进程P有8个页面，页号分别为0～7，页面大小为4K ，假设系统给进程P分配了4个存储块，进程P的页面变换表如下所示。表中状态位等于1和0分别表示页面在内存和不在内存。若进程P要访问的逻辑地址为十六进制 5148H，则该地址经过变换后， 其物理地址应为十六进制（ ）；如果进程P要访问的页面6不在内存，那么应该淘汰页号为（ ）的页面。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2021-02/815/Qt8hjdqruS.png",
+        "image": "images/Qt8hjdqruS.png",
         "options": [
           [
             {
@@ -4295,7 +4295,7 @@
         "id": "60416486",
         "type": "multi_choice",
         "content": "进程P1、P2、P3、P4、P5、P6和P7的前趋图如下所示： 若用PV操作控制这7个进程的同步与互斥的程序如下，那么程序中的a、b、c处应分别填写（ ），d、e、f处应分别填写（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2024-03/796/EMfnxt5sfg.png",
+        "image": "images/EMfnxt5sfg.png",
         "options": [
           [
             {
@@ -4344,7 +4344,7 @@
         "id": "60123533",
         "type": "multi_choice",
         "content": "前趋图是一个有向无环图，记为→=｛（Pi,Pj）pi完成时间先于Pj开始时间｝。假设系统中进程P=｛P1，P2，P3，P4，P5，P6，P7，P8｝，且进程的前趋图如下：",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2023-02/311/aHF9YYz7Vz.png",
+        "image": "images/aHF9YYz7Vz.png",
         "options": [
           [
             {
@@ -4489,7 +4489,7 @@
         "id": "418521",
         "type": "multi_choice",
         "content": "假设文件系统采用索引节点管理，且索引节点有8个地址项iaddr[0]～iaddr[7]，每个地址项大小为4字节，iaddr[0]～iaddr[4]采用直接地址索引，iaddr[5]和iaddr[6]采用一级间接地址索引，iaddr[7]采用二级间接地址索引。假设磁盘索引块和磁盘数据块大小均为1KB字节，文件File1的索引节点如下图所示。若用户访问文件File1中逻辑块号为516的信息，则对应的物理块号为（ ）；90号物理块存放的是（ ）。",
-        "image": "https://lstatic.xisaiwang.com/tiku/uploadfiles/2016-03/0ef30ad61ac74b7fbc6086a39cba69b7_.png",
+        "image": "images/0ef30ad61ac74b7fbc6086a39cba69b7_.png",
         "options": [
           [
             {
@@ -4572,7 +4572,7 @@
         "id": "60173405",
         "type": "choice",
         "content": "在支持多线程的操作系统中，假设进程P1创建了线程T1和T2，进程P2创建了线程T3和T4，那么以下说法错误的是（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2022-04/719/tejpMtnsm2.png",
+        "image": "images/tejpMtnsm2.png",
         "options": [
           [
             {
@@ -4609,7 +4609,7 @@
         "id": "515881",
         "type": "multi_choice",
         "content": "假设计算机系统中有三类互斥资源 R1、R2和 R3 可用资源数分别为9、5和3，若在T0时刻系统中有P1，P2，P3，P4，P5五个进程，这些进程对资源的最大需求量和已分配资源数如下表所示。在 T0 时刻系统剩余的可用资源数分别为（ ）。如果进程按（ ）序列执行，那么系统状态是安全的。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2019-10/423/avISbYuYp6.png",
+        "image": "images/avISbYuYp6.png",
         "options": [
           [
             {
@@ -4901,7 +4901,7 @@
         "id": "60016086",
         "type": "choice",
         "content": "在计算机系统中，对数据开平方的操作的处理时间为整个系统运行时间的60%，若要使整个系统的性能提高2倍，则该功能的处理速度应加快（）倍。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2022-04/365/NxBtZsL9Xc.png",
+        "image": "images/NxBtZsL9Xc.png",
         "options": [
           [
             {
@@ -7689,7 +7689,7 @@
         "id": "383973",
         "type": "essay",
         "content": "采用微内核结构的操作系统设计的基本思想是内核只完成操作系统最基本的功能并在核心态下运行，其他功能运行在用户态，其结构图如下所示。图中空（a）、（b）、（c）和（d）应分别选择如下所示①~④中的哪一项？（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2019-10/595/sqFZGWBe3c.png",
+        "image": "images/sqFZGWBe3c.png",
         "options": [],
         "answer": "C",
         "analysis": "",
@@ -7926,7 +7926,7 @@
         "id": "60417124",
         "type": "choice",
         "content": "DO-178B的目的是为制造机载系统和设备的机载软件提供指导，使其能够提供在满足符合适航要求的安全性水平下完成预期功能。关于DO-178B以下说法错误的是（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2024-04/487/aBE3bzQUym.png",
+        "image": "images/aBE3bzQUym.png",
         "options": [
           [
             {
@@ -7963,7 +7963,7 @@
         "id": "60416511",
         "type": "choice",
         "content": "嵌入式系统设计一般要考虑功耗问题，必须从软件和硬件两个方面全面考虑。下面不属于基于软件的低功耗的是（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2024-03/494/2zffZdwh53.png",
+        "image": "images/2zffZdwh53.png",
         "options": [
           [
             {
@@ -8474,7 +8474,7 @@
         "id": "60173261",
         "type": "choice",
         "content": "孙某是A物流公司的信息化系统管理员。在任职期间，孙某根据公司的业务要求开发了“物资进销存系统”，并由A公司使用。后来A公司将该软件申请了计算机软件著作权，并取得《计算机软件著作登记证书》。证书明确软件著作名称为“物资进销存系统V1.0”，以下说法正确的是（ ）。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2023-10/787/8TMJdj4QCc.png",
+        "image": "images/8TMJdj4QCc.png",
         "options": [
           [
             {
@@ -9301,7 +9301,7 @@
         "id": "60098393",
         "type": "choice",
         "content": "某项目包括A、B、C、D四道工序，各道工序之间的衔接关系。正常进度下各工序所需的时间和直接费用、赶工进度下所需的时间和直接费用如下表所示。该项目每天需要的间接费用为4.5万元。根据此表，以最低成本完成该项目需要（ ）天。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2022-11/821/dW8m4Eke5u.png",
+        "image": "images/dW8m4Eke5u.png",
         "options": [
           [
             {
@@ -9510,7 +9510,7 @@
         "id": "60428597",
         "type": "choice",
         "content": "（ ）是在传输层定义的协议。",
-        "image": "https://img.kuaiwenyun.com/images/shiti/2024-11/562/k6ZsPyD3eE.png",
+        "image": "images/k6ZsPyD3eE.png",
         "options": [
           [
             {
@@ -9847,7 +9847,7 @@
         "id": "36681",
         "type": "choice",
         "content": "主机host1对host2进行域名查询的过程如下图所示，下列说法中正确的是（ ）。",
-        "image": "https://lstatic.xisaiwang.com/tiku/uploadfiles/2017-09/3428a38f4f3a4c73b6994b568221900f_.png",
+        "image": "images/3428a38f4f3a4c73b6994b568221900f_.png",
         "options": [
           [
             {
@@ -10430,7 +10430,7 @@
           "id": "60428676",
           "type": "multi_choice",
           "content": "某项目含12个作业A~L，每个作业的紧前作业以及需要持续的时间如下表：",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-11/830/U7FKtdqVDe.png",
+          "image": "images/U7FKtdqVDe.png",
           "options": [
             [
               {
@@ -10763,7 +10763,7 @@
           "id": "60425823",
           "type": "choice",
           "content": "遗留系统的技术含量较低，已经满足企业运作的功能或性能要求，但具有较高的商业价值，目前企业的业务尚紧密依赖该系统。对这种遗留系统的演化策略为（）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-09/837/fE6GVJ5rCU.png",
+          "image": "images/fE6GVJ5rCU.png",
           "options": [
             [
               {
@@ -10943,7 +10943,7 @@
           "id": "60425659",
           "type": "choice",
           "content": "关于设计模式，下列对应正确的是（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-09/201/vmbLjfc9ZF.png",
+          "image": "images/vmbLjfc9ZF.png",
           "options": [
             [
               {
@@ -12865,7 +12865,7 @@
           "id": "60015989",
           "type": "multi_choice",
           "content": "在磁盘调度管理中，应先进行移臂调度，再进行旋转调度。若磁盘移动臂位于68号柱面上，进程的请求序列如下表所示。若采用最短移臂调度算法，则系统的响应序列应为（ ），其平均移臂距离为（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2022-04/635/XgKhEbXqd9.png",
+          "image": "images/XgKhEbXqd9.png",
           "options": [
             [
               {
@@ -14187,7 +14187,7 @@
           "id": "60389065",
           "type": "choice",
           "content": "下面关于微服务与SOA的说法正确的是（ ）",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2023-09/246/rqSxyEuJM8.png",
+          "image": "images/rqSxyEuJM8.png",
           "options": [
             [
               {
@@ -14430,7 +14430,7 @@
           "id": "60425599",
           "type": "choice",
           "content": "以下关于数据库系统的三级模式的说法正确的是（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-09/85/gSxvFuHdQ2.png",
+          "image": "images/gSxvFuHdQ2.png",
           "options": [
             [
               {
@@ -14475,7 +14475,7 @@
           "id": "60123579",
           "type": "multi_choice",
           "content": "给定关系模式R(U,F)，U={A,B,C,D,E,F}，F={A→B,B→D, D→E,DF→C,E→A}。关系R（ ），且分别有（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2023-02/242/6r4awVZ8QK.png",
+          "image": "images/6r4awVZ8QK.png",
           "options": [
             [
               {
@@ -14853,7 +14853,7 @@
           "id": "60122979",
           "type": "choice",
           "content": "若某计算机是由五个部件并串联构成，如下图所示。且每一部件的可靠度R都是0.9，则该计算机的可靠度为（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2023-02/189/L2KwaKFk9S.png",
+          "image": "images/L2KwaKFk9S.png",
           "options": [
             [
               {
@@ -15293,7 +15293,7 @@
           "id": "60391929",
           "type": "choice",
           "content": "A路和B路公交车都将在10分钟内均匀随机地到达同一车站，则它们相隔5分钟内到达该站的概率为（）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2023-09/695/6RbSD9LXyy.png",
+          "image": "images/6RbSD9LXyy.png",
           "options": [
             [
               {
@@ -15584,7 +15584,7 @@
           "id": "60418073",
           "type": "multi_choice",
           "content": "某文件管理系统在磁盘上建立了位示图（bitmap），记录磁盘的使用情况。若磁盘上物理块的编号依次为：0、1、2、…；系统中的字长为32位，字的编号依次为：0、1、2、…，字中的一位对应文件存储器上的一个物理块，取值0和1分别表示空闲和占用，如下图所示。 若磁盘的容量为200GB，物理块的大小为1MB，那么位示图的大小为（ ）个字。 假设操作系统将2053号物理块分配给某文件，系统应该将（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-04/822/StPCV2ZPHP.png",
+          "image": "images/StPCV2ZPHP.png",
           "options": [
             [
               {
@@ -15633,7 +15633,7 @@
           "id": "60016075",
           "type": "choice",
           "content": "阿姆达尔（Amdahl）定律量化定义了通过改进系统中某个组件的性能，使系统整体性能提高的程度。假设某一操作的处理时间为整个系统运行时间的40%，若使该功能的处理速度提高至原来的10倍，则根据阿姆达尔定律，整个系统的处理速度可提高至原来的（ ）倍。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2022-04/572/fuH7Q8JLhK.png",
+          "image": "images/fuH7Q8JLhK.png",
           "options": [
             [
               {
@@ -17369,7 +17369,7 @@
           "id": "60455572",
           "type": "choice",
           "content": "OSI/RM是一种分层的体系结构，参考模型共有7层，分层的基本思想：每一层都利用下层提供的服务，并在此基础上增加自己的功能，从而提供更高级的服务，最终最高层提供能运行分布式应用程序的服务。该体系结构由低层至高层分别为（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2025-03/280/ftcYcL2Wpf.png",
+          "image": "images/ftcYcL2Wpf.png",
           "options": [
             [
               {
@@ -18162,7 +18162,7 @@
           "id": "60455556",
           "type": "choice",
           "content": "以下嵌入式系统的存储部件中，存取速度最慢的是（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2025-03/11/Qq3WvWZML5.png",
+          "image": "images/Qq3WvWZML5.png",
           "options": [
             [
               {
@@ -18224,7 +18224,7 @@
           "id": "60173480",
           "type": "multi_choice",
           "content": "进程P1、P2、P3、P4、P5和P6的前趋图如下所示：",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2023-05/259/ZEPXAhfWy6.png",
+          "image": "images/60173480.png",
           "options": [
             [
               {
@@ -20886,7 +20886,7 @@
           "id": "60426788",
           "type": "multi_choice",
           "content": "某风险投资公司拥有的总资金数为25，分期为项目P1、P2、P3、P4投资，各项目投资情况如下表所示。公司的可用资金数为（ ）。若P1和P3分别申请资金数1和2，则公司资金管理处（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-09/180/wm3GHrbyqG.png",
+          "image": "images/wm3GHrbyqG.png",
           "options": [
             [
               {
@@ -21855,7 +21855,7 @@
           "id": "60098371",
           "type": "choice",
           "content": "在对遗留系统进行评估时，对于技术含量较高、业务价值较低且仅能完成某个部门的业务管理的遗留系统，一般采用的遗留系统演化策略是（ ）策略。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2022-12/334/xM4uSnS8qH.png",
+          "image": "images/xM4uSnS8qH.png",
           "options": [
             [
               {
@@ -22791,7 +22791,7 @@
           "id": "60455515",
           "type": "choice",
           "content": "若存在关系模式R（U，F），其中属性集U={A，B，C，D，E，F}，函数依赖集F={A->C，B->D，D->E，AE->F }。关系模式R的候选码为（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2025-03/646/mybRpTEeg1.png",
+          "image": "images/mybRpTEeg1.png",
           "options": [
             [
               {
@@ -23449,7 +23449,7 @@
           "id": "60428753",
           "type": "choice",
           "content": "已知时间序列值X1,X2...,Xn（例如该地区逐年人均收入），根据以下递推公式可以推算出下一期的预测值Yn+i（例如该地区逐年物价指数）；当i=n,n-1..2时，Y1+i=aXi+(1-α)Yi，Yi=Xi，其中α为参数(0<α<1)。这种预测方法属于（ ）。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-11/247/2Cy7y2yxU7.png",
+          "image": "images/2Cy7y2yxU7.png",
           "options": [
             [
               {
@@ -23585,7 +23585,7 @@
           "id": "60015987",
           "type": "multi_choice",
           "content": "假设磁盘上每个磁道划分成10个物理块，每块存放1个逻辑记录。逻辑记录R0，R1，...，R9存放在同一个磁道上，记录的安排顺序如下表所示：",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2022-04/500/6TjuRXXz9T.png",
+          "image": "images/6TjuRXXz9T.png",
           "options": [
             [
               {
@@ -23665,7 +23665,7 @@
           "id": "60418065",
           "type": "multi_choice",
           "content": "假设某计算机系统中只有一个CPU、一台输入设备和一台输出设备，若系统中有四个作业T1、T2、T3和T4，系统采用优先级调度，且T1的优先级>T2的优先级>T3的优先级>T4的优先级。每个作业Ti具有三个程序段：输入Ii、计算Ci和输出Pi（i=1，2，3，4），其执行顺序为Ii→Ci→Pi。这四个作业各程序段并发执行的前趋图如下所示。图中①、②分别为（ ），③、④、⑤分别为（ ）",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-04/253/vtpQBHuD7P.png",
+          "image": "images/vtpQBHuD7P.png",
           "options": [
             [
               {
@@ -23714,7 +23714,7 @@
           "id": "60015933",
           "type": "choice",
           "content": "设某进程的段表如下所示，逻辑地址（ ）可以转换为对应的物理地址。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2022-04/263/9EPNf83JCF.png",
+          "image": "images/9EPNf83JCF.png",
           "options": [
             [
               {
@@ -23955,7 +23955,7 @@
           "id": "60071443",
           "type": "multi_choice",
           "content": "某工程包括A、B、C、D四个作业，其衔接关系、正常进度下所需天数和所需直接费用、赶工进度下所需的最少天数和每天需要增加的直接费用见下表。该工程的间接费用为每天6万元。据此，可以估算出完成该工程最少需要费用（ ）万元，以此最低费用完成该工程需要（ ）天。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2022-08/538/YKBaDfbHD5.png",
+          "image": "images/YKBaDfbHD5.png",
           "options": [
             [
               {
@@ -25539,7 +25539,7 @@
           "id": "60455766",
           "type": "choice",
           "content": "（ ）是在应用层层定义的协议。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2025-03/370/d4fx8mRBrC.png",
+          "image": "images/d4fx8mRBrC.png",
           "options": [
             [
               {
@@ -25764,7 +25764,7 @@
           "id": "60425853",
           "type": "choice",
           "content": "在可靠性设计中包含避错技术、降低复杂度设计、检错技术和容错技术，其中（）在进行恢复时使用的是前向恢复策略。",
-          "image": "https://img.kuaiwenyun.com/images/shiti/2024-09/283/c8hWEWJUBN.png",
+          "image": "images/c8hWEWJUBN.png",
           "options": [
             [
               {
