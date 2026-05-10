@@ -1828,16 +1828,41 @@
 
             const submitBtn = e.target.closest('[data-submit]');
             if (submitBtn) {
-                submitAnswer();
+                // 防止重复提交
+                if (submitBtn.disabled) return;
+                // 立即显示加载状态
+                submitBtn.disabled = true;
+                submitBtn.textContent = '提交中...';
+                submitBtn.style.opacity = '0.7';
+                submitAnswer(submitBtn);
             }
         });
 
         // 提交答案
-        function submitAnswer() {
+        let isSubmitting = false; // 防止快速连续点击
+        function submitAnswer(btnElement) {
             const q = currentQuestions[currentIndex];
+
+            // 防止重复提交
+            if (submittedAnswers[q.id] || isSubmitting) {
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.textContent = '提交答案';
+                    btnElement.style.opacity = '1';
+                }
+                return;
+            }
+            isSubmitting = true;
+
             const userAns = userAnswers[q.id] || [];
             if (!userAns.some(a => a)) {
                 alert('请先选择答案');
+                isSubmitting = false;
+                if (btnElement) {
+                    btnElement.disabled = false;
+                    btnElement.textContent = '提交答案';
+                    btnElement.style.opacity = '1';
+                }
                 return;
             }
 
@@ -1859,6 +1884,7 @@
             saveQuestionRecord(q.id, allCorrect);
 
             renderQuestion();
+            isSubmitting = false; // 重置提交状态
 
             if (currentIndex === currentQuestions.length - 1) {
                 const total = correctCount + wrongCount;
