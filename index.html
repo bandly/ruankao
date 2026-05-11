@@ -981,7 +981,7 @@
         }
 
         // 格式化案例分析题内容（按【问题】分段）
-        function formatCaseContent(text) {
+        function formatCaseContent(text, images = []) {
             if (!text) return '';
 
             // 按【问题】分割
@@ -1015,8 +1015,16 @@
                             <span class="case-question-num">问题${qNum}</span>
                             ${points ? `<span class="case-question-points">(${points}分)</span>` : ''}
                         </div>
-                        <div class="case-question-content">${content}</div>
-                    </div>`;
+                        <div class="case-question-content">${content}</div>`;
+
+                    // 在问题1后插入图片
+                    if (qNum === '1' && images.length > 0) {
+                        html += `<div class="case-images">
+                            ${images.map(img => `<img src="${img}" alt="题目图片" style="max-width: 100%; margin: 15px 0;">`).join('')}
+                        </div>`;
+                    }
+
+                    html += `</div>`;
                 }
             }
 
@@ -1761,12 +1769,7 @@
                     <div class="question-header">
                         <span class="question-number">试题 ${q.number} [${q.id}] - 案例分析</span>
                     </div>
-                    <div class="question-content">${formatCaseContent(q.content)}</div>
-                    ${q.images && q.images.length > 0 ? `
-                        <div class="case-images">
-                            ${q.images.map(img => `<img src="${img}" alt="题目图片" style="max-width: 100%; margin: 15px 0;">`).join('')}
-                        </div>
-                    ` : ''}
+                    <div class="question-content">${formatCaseContent(q.content, q.images)}</div>
                     <div class="btn-group">
                         <button class="btn btn-primary" onclick="showCaseAnswer('${q.id}')">查看答案</button>
                     </div>
