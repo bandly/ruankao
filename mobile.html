@@ -1080,7 +1080,7 @@
 
             let html = '';
             for (let m of matches) {
-                const parts = m.match(/【问题(\d+)[】\)]\s*(.*)/);
+                const parts = m.match(/【问题(\d+)[】\)]\s*([\s\S]*)/);
                 if (parts) {
                     html += `<div class="answer-item">
                         <div class="answer-item-header">问题${parts[1]}答案</div>

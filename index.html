@@ -1055,7 +1055,7 @@
             let html = '';
             for (let i = 0; i < matches.length; i++) {
                 const answerText = matches[i];
-                const answerMatch = answerText.match(/【问题(\d+)[】\)]\s*(.*)/);
+                const answerMatch = answerText.match(/【问题(\d+)[】\)]\s*([\s\S]*)/);
 
                 if (answerMatch) {
                     const qNum = answerMatch[1];
