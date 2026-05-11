@@ -1020,16 +1020,33 @@
         }
 
         // 格式化案例分析题内容
-        function formatCaseContent(text) {
+        function formatCaseContent(text, images = []) {
             if (!text) return '';
-            const matches = text.match(/【问题(\d+)[】\)](?:\s*[（(]\s*(\d+)\s*分\s*[）)]\s*)?\s*([^【]*)/g);
-            const introMatch = text.match(/^(.+?)(?=【问题\d+[】\)])/);
-            let html = '';
 
-            if (introMatch) {
-                html += `<div class="case-intro"><h4>案例背景</h4><p>${introMatch[1].trim()}</p></div>`;
+            // 查找第一个问题标记的位置
+            const firstQuestionIdx = text.indexOf('【问题');
+
+            if (firstQuestionIdx === -1) {
+                return `<div class="case-section"><p>${text}</p></div>`;
             }
 
+            // 提取背景描述（第一个【问题】之前的内容）
+            const intro = text.substring(0, firstQuestionIdx).trim();
+            let html = '';
+
+            if (intro) {
+                html += `<div class="case-intro"><h4>案例背景</h4><p>${intro}</p></div>`;
+            }
+
+            // 图片放在案例背景之后、问题之前
+            if (images.length > 0) {
+                html += `<div class="case-images">
+                    ${images.map(img => `<img src="${img}" alt="题目图片" style="max-width: 100%; margin: 15px 0;">`).join('')}
+                </div>`;
+            }
+
+            // 处理每个问题
+            const matches = text.match(/【问题\d+[】\)]([^【]*)/g);
             if (matches) {
                 for (let m of matches) {
                     const parts = m.match(/【问题(\d+)[】\)](?:\s*[（(]\s*(\d+)\s*分\s*[）)]\s*)?\s*(.*)/);
@@ -1764,12 +1781,7 @@
 
         // 渲染案例分析题
         function renderCaseAnalysisQuestion(q) {
-            let html = `<div class="question-content">${formatCaseContent(q.content)}</div>`;
-
-            // 图片
-            if (q.images && q.images.length > 0) {
-                html += `<div class="question-image">${q.images.map(img => `<img src="${img}" alt="题目图片">`).join('')}</div>`;
-            }
+            let html = `<div class="question-content">${formatCaseContent(q.content, q.images)}</div>`;
 
             html += `<div style="text-align: center; margin-top: 15px;">
                 <button class="submit-btn" onclick="document.getElementById('answerBox').classList.remove('hidden')">查看答案</button>
