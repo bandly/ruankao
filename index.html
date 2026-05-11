@@ -1000,6 +1000,13 @@
                 html += `<div class="case-intro"><h4>案例背景</h4><p>${introMatch[1].trim()}</p></div>`;
             }
 
+            // 图片放在案例背景之后、问题之前
+            if (images.length > 0) {
+                html += `<div class="case-images">
+                    ${images.map(img => `<img src="${img}" alt="题目图片" style="max-width: 100%; margin: 15px 0;">`).join('')}
+                </div>`;
+            }
+
             // 处理每个问题
             for (let i = 0; i < matches.length; i++) {
                 const questionText = matches[i];
@@ -1015,16 +1022,8 @@
                             <span class="case-question-num">问题${qNum}</span>
                             ${points ? `<span class="case-question-points">(${points}分)</span>` : ''}
                         </div>
-                        <div class="case-question-content">${content}</div>`;
-
-                    // 在问题1后插入图片
-                    if (qNum === '1' && images.length > 0) {
-                        html += `<div class="case-images">
-                            ${images.map(img => `<img src="${img}" alt="题目图片" style="max-width: 100%; margin: 15px 0;">`).join('')}
-                        </div>`;
-                    }
-
-                    html += `</div>`;
+                        <div class="case-question-content">${content}</div>
+                    </div>`;
                 }
             }
 
