@@ -996,7 +996,7 @@
             let html = '';
 
             if (intro) {
-                html += `<div class="case-intro"><h4>案例背景</h4><p>${intro}</p></div>`;
+                html += `<div class="case-intro"><h4>案例背景</h4><p>${intro.replace(/\n/g, '<br>')}</p></div>`;
             }
 
             // 通用图片放在案例背景之后、问题之前
@@ -1023,7 +1023,7 @@
                                 <span class="case-question-num">问题${qNum}</span>
                                 ${points ? `<span class="case-question-points">(${points}分)</span>` : ''}
                             </div>
-                            <div class="case-question-content">${content}</div>`;
+                            <div class="case-question-content">${content.replace(/\n/g, '<br>')}</div>`;
 
                         // 在问题后插入对应图片
                         if (questionImages[qNum] && questionImages[qNum].length > 0) {
