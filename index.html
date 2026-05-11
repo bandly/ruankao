@@ -1011,7 +1011,8 @@
             if (matches) {
                 for (let i = 0; i < matches.length; i++) {
                     const questionText = matches[i];
-                    const questionMatch = questionText.match(/【问题(\d+)[】\)](?:\s*[（(]\s*(\d+)\s*分\s*[）)]\s*)?\s*(.*)/);
+                    // 使用[\s\S]*匹配多行内容，而不是.*只匹配单行
+                    const questionMatch = questionText.match(/【问题(\d+)[】\)](?:\s*[（(]\s*(\d+)\s*分\s*[）)]\s*)?\s*([\s\S]*)/);
 
                     if (questionMatch) {
                         const qNum = questionMatch[1];
